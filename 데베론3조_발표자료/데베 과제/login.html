@@ -14,7 +14,7 @@
     .top-bar {
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: space-between;
       background-color: #2c3e50;
       color: white;
       padding: 12px 20px;
@@ -75,7 +75,20 @@
     <button onclick="login()">로그인</button>
     <div class="toggle">
       계정이 없으신가요? <a href="signup.html"><span>회원가입</span></a><br>
-      비밀번호를 잊으셨나요? <span onclick="toggleForm('findPw')">비밀번호 찾기</span>
+      아이디/비밀번호를 잊으셨나요? <span onclick="toggleForm('findId')">아이디 찾기</span>/<span onclick="toggleForm('findPw')">비밀번호 찾기</span>
+    </div>
+  </div>
+
+  <!-- 아이디 찾기 -->
+  <div class="container hidden" id="findIdForm">
+    <h2>아이디 찾기</h2>
+    <label for="findEmail">가입한 이메일</label>
+    <input type="email" id="findEmail" placeholder="가입 시 이메일 입력">
+    <button onclick="checkEmail()">다음</button>
+    <div id="findMsg" class="error-message hidden"></div>
+
+    <div class="toggle">
+      <span onclick="toggleForm('login')">← 로그인으로 돌아가기</span>
     </div>
   </div>
 
@@ -108,6 +121,7 @@
 
   <script>
     const loginForm = document.getElementById('loginForm');
+    const findIdForm = document.getElementById('findIdForm');
     const findPwForm = document.getElementById('findPwForm');
     const resetPwForm = document.getElementById('resetPwForm');
     const findMsg = document.getElementById('findMsg');
@@ -116,11 +130,13 @@
 
     function toggleForm(type) {
       loginForm.classList.add('hidden');
+      findIdForm.classList.add('hidden');
       findPwForm.classList.add('hidden');
       resetPwForm.classList.add('hidden');
 
       if (type === 'login') loginForm.classList.remove('hidden');
       else if (type === 'findPw') findPwForm.classList.remove('hidden');
+      else if (type === 'findId') findIdForm.classList.remove('hidden');
       else if (type === 'resetPw') resetPwForm.classList.remove('hidden');
     }
 
