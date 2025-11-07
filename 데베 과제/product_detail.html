@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>중고거래 사이트 메뉴바</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+        body {
+            /* Changed */
+            margin-top: 80px;
+            /* Changed: 메뉴바 높이만큼 여백 */
+        }
+
+        /* Changed: 상세 페이지 전체 버튼 정렬 개선 */
+        .detail-container {
+            /* Changed */
+            width: 80%;
+            margin: 50px auto;
+            /* Changed: 가운데 정렬 */
+            display: flex;
+            gap: 40px;
+            align-items: flex-start;
+            justify-content: center;
+            /* Changed */
+        }
+
+        .detail-container img {
+            /* Changed */
+            width: 350px;
+            height: 350px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+        }
+
+        .detail-info {
+            /* Changed */
+            flex: 1;
+            max-width: 500px;
+            /* Changed */
+        }
+
+        .detail-info h2 {
+            /* Changed */
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+
+        .detail-info .price {
+            /* Changed */
+            font-size: 20px;
+            font-weight: bold;
+            color: #c0392b;
+            margin-bottom: 20px;
+        }
+
+        .detail-info .description {
+            /* Changed */
+            line-height: 1.6;
+            white-space: pre-line;
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+    <div class="logo">
+      <a href="main.html">Re:Born</a>
+    </div>
+
+    <div class="search-bar">
+      <input type="text" placeholder="상품명, 카테고리 검색..." />
+    </div>
+
+    <ul class="menu">
+        <li>
+            <a href="#">마이 페이지</a>
+            <ul class="submenu" style="left: -30px;">
+            <li><a href="my_info.html">내 정보</a></li>
+            <li><a href="goods_reg.html">등록한 상품 목록</a></li>
+            <li><a href="rating.html">후기 / 평점</a></li>
+            <li><a href="javascript:void(0);" onclick = "openWithdrawPopup()">탈퇴하기</a></li>
+            </li>
+            </ul>
+        </li>
+
+
+        <li>
+            <a href="#">로그인/회원가입</a>
+            <ul class="submenu">
+            <li><a href="login.html">로그인</a></li>
+            <li><a href="signup.html">회원가입</a></li>
+            </ul>
+        </li>
+    </ul>
+  </nav>
+    <div class="detail-container"> <!-- Changed -->
+        <img src="https://via.placeholder.com/350" alt="상품 이미지"> <!-- Changed -->
+
+        <div class="detail-info"> <!-- Changed -->
+            <h2>상품명 예시</h2>
+            <div class="price">10,000원</div>
+            <div class="description">
+                상품 설명 예시입니다.
+                상품 상태는 양호하며, 사용감은 거의 없습니다.
+                직거래/택배 가능.
+            </div>
+
+            <div class="seller-name" id="sellerName" style="margin-top: 18px; font-size: 15px; color: #555; cursor: pointer;">
+                <!-- Changed -->
+                판매자: <strong> db의신 </strong>
+            </div>
+            <button id="buyBtn"
+                style="margin-top:25px; padding:12px 25px; background:#2c7be5; color:white; border:none; border-radius:6px; font-size:16px; cursor:pointer;">
+                구매하기
+            </button>
+        </div>
+    </div>
+    <script>
+        function openWithdrawPopup() {
+            const popupWidth = 500;
+            const popupHeight = 650;
+            const left = (window.screen.width / 2) - (popupWidth / 2);
+            const top = (window.screen.height / 2) - (popupHeight / 2);
+            const options = `width=${popupWidth},height=${popupHeight},left=${left},top=${top},status=no,menubar=no,toolbar=no,resizable=no`;
+            window.open("withdraw.html", "withdrawPopup", options);
+        }
+        document.getElementById("buyBtn").addEventListener("click", function () { // Changed
+            alert("구매 요청이 완료되었습니다! 판매자와 채팅을 시작합니다."); // Changed
+            // 추후: 거래 테이블 생성, 채팅방 이동, 결제 시스템 연결 가능 // Changed
+        });
+        document.getElementById("sellerName").addEventListener("click", function () { // Changed
+        alert("판매자 정보 페이지로 이동합니다."); // Changed
+        // 나중에 실제 판매자 상세 페이지로 연결 예정 // Changed
+        // window.location.href = `seller_info.html?seller_id=???`; // Changed
+        });
+    </script>
+</body>
+
+</html>

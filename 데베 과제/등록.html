@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>내 상품 관리</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Noto Sans KR', sans-serif;
+      background-color: #f9f9f9;
+    }
+
+    /* Changed - 상단 네비게이션 */
+    nav {
+      background-color: #2c3e50;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      height: 60px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      position: fixed; /* Changed - 스크롤 시 고정 */
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+    }
+
+    .logo {
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    ul.menu {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    ul.menu > li {
+      position: relative;
+      margin: 0 15px;
+      cursor: pointer;
+    }
+
+    ul.menu > li > a {
+      text-decoration: none;
+      color: white;
+      font-weight: 500;
+      padding: 8px;
+      transition: color 0.3s;
+    }
+
+    ul.menu > li:hover > a {
+      color: #1abc9c;
+    }
+
+    /* Changed - 드롭다운 메뉴 */
+    ul.submenu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background-color: #34495e;
+      list-style: none;
+      padding: 10px 0;
+      border-radius: 6px;
+      min-width: 150px;
+      z-index: 100;
+    }
+
+    ul.submenu li {
+      padding: 8px 16px;
+    }
+
+    ul.submenu li a {
+      color: white;
+      text-decoration: none;
+      display: block;
+      font-size: 14px;
+    }
+
+    ul.menu > li:hover ul.submenu {
+      display: block;
+    }
+
+    /* Changed - 검색창 */
+    .search-bar {
+      flex-grow: 1;
+      display: flex;
+      justify-content: center;
+    }
+
+    .search-bar input {
+      width: 50%;
+      max-width: 400px;
+      padding: 8px 12px;
+      border-radius: 20px;
+      border: none;
+      outline: none;
+      font-size: 14px;
+    }
+
+    /* Changed - 컨테이너 (상품 목록 영역) */
+    .container {
+      max-width: 1200px;
+      margin: 100px auto 60px auto; /* Changed - 메뉴바 높이 보정 */
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #2c3e50;
+    }
+
+    .product-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .product-card {
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      background-color: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+
+    .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .product-img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      background-color: #eee;
+    }
+
+    .product-info {
+      padding: 15px;
+      flex-grow: 1;
+    }
+
+    .product-name {
+      font-size: 17px;
+      font-weight: bold;
+      color: #2c3e50;
+      margin-bottom: 5px;
+    }
+
+    .product-desc {
+      color: #555;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    .product-price {
+      color: #1abc9c;
+      font-weight: bold;
+    }
+
+    .btn-group {
+      display: flex;
+      justify-content: space-around;
+      border-top: 1px solid #eee;
+      padding: 10px;
+      background: #fafafa;
+    }
+
+    button {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: 0.2s;
+    }
+
+    .edit-btn {
+      background-color: #f39c12;
+      color: white;
+    }
+
+    .edit-btn:hover {
+      background-color: #d68910;
+    }
+
+    .delete-btn {
+      background-color: #e74c3c;
+      color: white;
+    }
+
+    .delete-btn:hover {
+      background-color: #c0392b;
+    }
+
+    .add-btn {
+      background-color: #1abc9c;
+      color: white;
+      margin-top: 30px;
+      padding: 12px 20px;
+      display: block;
+      width: 100%;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    .add-btn:hover {
+      background-color: #16a085;
+    }
+
+    /* Changed - 메뉴 아래 회색 부분 제거 */
+    body::before {
+      content: none; /* 혹시 남아있던 배경 제거용 */
+    }
+  </style>
+</head>
+<body>
+  <!-- Changed - 드롭다운 메뉴 포함 -->
+  <nav>
+    <div class="logo">중고마켓</div>
+
+    <div class="search-bar">
+      <input type="text" placeholder="상품명, 카테고리 검색..." />
+    </div>
+
+    <ul class="menu">
+
+      <li>
+        <a href="#">로그인/회원</a>
+        <ul class="submenu">
+            <li><a href="ss.html">로그인</a></li>
+            <li><a href="">회원가입</a></li>
+        </ul>
+      </li>
+
+      <li>
+        <a href="#">마이 페이지</a>
+        <ul class="submenu">
+            <li><a href="my_info.html">내 정보</a></li>
+            <li><a href="등록.html">등록한 상품 목록</a></li>
+            <li><a href="reviews.html">후기</a></li>
+            <li><a href="rating.html">평점</a></li>
+            <li><a href="wishlist.html">찜 목록</a></li>
+            <li><a href="withdraw.html">탈퇴하기</a></li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <h2>내 상품 목록</h2>
+    <div class="product-list" id="productList"></div>
+    <button class="add-btn" onclick="addProduct()">새 상품 등록</button>
+  </div>
+
+  <script>
+    // 상품 임시 데이터
+    let products = [
+      { id: 1, name: "나이키 신발", desc: "거의 새 상품이에요.", price: 45000, img: "https://via.placeholder.com/300x180?text=나이키+신발" },
+      { id: 2, name: "아이폰 13 미니", desc: "생활기스 조금 있음.", price: 620000, img: "https://via.placeholder.com/300x180?text=아이폰+13+미니" },
+      { id: 3, name: "책상", desc: "튼튼하고 깨끗함.", price: 30000, img: "https://via.placeholder.com/300x180?text=책상" },
+      { id: 4, name: "패딩 점퍼", desc: "겨울 필수템!", price: 85000, img: "https://via.placeholder.com/300x180?text=패딩+점퍼" },
+    ];
+
+    function renderProducts() {
+      const list = document.getElementById('productList');
+      list.innerHTML = '';
+
+      products.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.innerHTML = `
+          <img src="${p.img}" alt="${p.name}" class="product-img" />
+          <div class="product-info">
+            <div class="product-name">${p.name}</div>
+            <div class="product-desc">${p.desc}</div>
+            <div class="product-price">${p.price.toLocaleString()}원</div>
+          </div>
+          <div class="btn-group">
+            <button class="edit-btn" onclick="editProduct(${p.id})">수정</button>
+            <button class="delete-btn" onclick="deleteProduct(${p.id})">삭제</button>
+          </div>
+        `;
+        list.appendChild(card);
+      });
+    }
+
+    function deleteProduct(id) {
+      if (confirm("정말 삭제하시겠습니까?")) {
+        products = products.filter(p => p.id !== id);
+        renderProducts();
+      }
+    }
+
+    function editProduct(id) {
+      const p = products.find(p => p.id === id);
+      const newName = prompt("상품명 수정:", p.name);
+      const newDesc = prompt("설명 수정:", p.desc);
+      const newPrice = prompt("가격 수정:", p.price);
+      const newImg = prompt("이미지 URL 수정:", p.img);
+      if (newName && newPrice) {
+        p.name = newName;
+        p.desc = newDesc;
+        p.price = parseInt(newPrice);
+        p.img = newImg || p.img;
+        renderProducts();
+      }
+    }
+
+    function addProduct() {
+      const name = prompt("새 상품명 입력:");
+      const desc = prompt("상품 설명 입력:");
+      const price = prompt("가격 입력:");
+      const img = prompt("이미지 URL 입력 (없으면 기본 이미지):") || "https://via.placeholder.com/300x180?text=상품이미지";
+      if (name && price) {
+        const newItem = { id: Date.now(), name, desc, price: parseInt(price), img };
+        products.push(newItem);
+        renderProducts();
+      }
+    }
+
+    renderProducts();
+  </script>
+</body>
+</html>

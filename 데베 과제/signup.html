@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>회원가입</title>
+  <link href="https://fonts.googleapis.com/css2?family=SUIT:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      /* Changed: SUIT 폰트, 배경색 #f8f9fa로 통일 */
+      font-family: 'SUIT', sans-serif;
+      background-color: #f8f9fa; 
+      margin: 0;
+      padding: 0;
+    }
+    .top-bar {
+      /* Changed: 흰색, 고정 내비게이션 스타일로 변경 */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #ffffff;
+      color: #333; 
+      padding: 12px 20px;
+      border-bottom: 1px solid #e0e0e0;
+      position: fixed; 
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .logo {
+      /* Changed: 메인 테마 로고 색상 및 크기(1.5rem, 700)로 통일 */
+      font-size: 1.5rem;
+      font-weight: 700;
+      cursor: pointer;
+      color: #2b6cb0; 
+      text-decoration: none;
+    }
+    .top-bar a.home {
+      display: none; /* 사용하지 않는 스타일 제거 */
+    }
+    .container {
+      max-width: 400px;
+      /* Changed: 고정 헤더 높이만큼 마진 조정 */
+      margin: 120px auto 60px auto; 
+      background: #fff;
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    h2 { text-align: center; color: #2c3e50; }
+    label { display: block; margin: 15px 0 5px; font-weight: 500; color: #333; }
+    input[type="text"], input[type="password"], input[type="email"] {
+      width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;
+      box-sizing: border-box; font-size: 15px;
+    }
+    button {
+      width: 100%; padding: 12px;
+      /* Changed: 메인 테마 색상 #2b6cb0로 통일 */
+      background-color: #2b6cb0; 
+      color: white;
+      border: none; border-radius: 8px;
+      font-size: 16px; cursor: pointer;
+      margin-top: 20px; transition: background-color 0.3s;
+    }
+    button:hover { 
+      /* Changed: 호버 색상 #22588f로 통일 */
+      background-color: #22588f; 
+    }
+    .toggle { text-align: center; margin-top: 25px; color: #555; font-size: 15px; }
+    .toggle span, .toggle a span { 
+      /* Changed: 강조 색상 #2b6cb0로 통일 */
+      color: #2b6cb0; 
+      cursor: pointer; font-weight: 600; text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-bar">
+    <a href="main.html" class="logo">중고마켓</a>
+  </div>
+
+  <div class="container">
+    <h2>회원가입</h2>
+    <label for="signupId">아이디</label>
+    <input type="text" id="signupId" placeholder="아이디 입력">
+
+    <label for="signupPw">비밀번호</label>
+    <input type="password" id="signupPw" placeholder="비밀번호 입력">
+
+    <label for="signupEmail">이메일</label>
+    <input type="email" id="signupEmail" placeholder="이메일 입력">
+
+    <button onclick="signup()">회원가입</button>
+
+    <div class="toggle">
+      이미 계정이 있으신가요? <a href="login.html"><span>로그인</span></a>
+    </div>
+  </div>
+
+  <script>
+    function signup() {
+      const id = document.getElementById('signupId').value;
+      const pw = document.getElementById('signupPw').value;
+      const email = document.getElementById('signupEmail').value;
+
+      if (!id || !pw || !email) {
+        alert("모든 정보를 입력해주세요!");
+        return;
+      }
+
+      const user = { id, pw, email };
+      localStorage.setItem('user', JSON.stringify(user));
+      alert("회원가입이 완료되었습니다! 로그인 페이지로 이동합니다.");
+      window.location.href = "login.html";
+    }
+  </script>
+</body>
+</html>

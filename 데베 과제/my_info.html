@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>내 정보 - 중고마켓</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <nav>
+    <div class="logo">
+      <a href="main.html">Re:Born</a>
+    </div>
+
+    <div class="search-bar">
+      <input type="text" placeholder="상품명, 카테고리 검색..." />
+    </div>
+
+    <ul class="menu">
+        <li>
+            <a href="#">마이 페이지</a>
+            <ul class="submenu" style="left: -30px;">
+            <li><a href="my_info.html">내 정보</a></li>
+            <li><a href="goods_reg.html">등록한 상품 목록</a></li>
+            <li><a href="rating.html">후기 / 평점</a></li>
+            <li><a href="javascript:void(0);" onclick = "openWithdrawPopup()">탈퇴하기</a></li>
+            </li>
+            </ul>
+        </li>
+
+
+        <li>
+            <a href="#">로그인/회원가입</a>
+            <ul class="submenu">
+            <li><a href="login.html">로그인</a></li>
+            <li><a href="signup.html">회원가입</a></li>
+            </ul>
+        </li>
+    </ul>
+  </nav>
+
+<main class="container">
+    <section id="my-info-view" class="page-section">
+      <h2>내 정보</h2>
+      
+      <div class="info-display">
+        <div class="info-row">
+          <span class="info-label">아이디</span>
+          <span class="info-value">honggildong</span> 
+        </div>
+        <div class="info-row">
+          <span class="info-label">닉네임</span>
+          <span class="info-value">데이터베이스천재</span>
+        </div>
+      </div>
+      
+      <div class="button-container">
+  <a href="my_info_edit.html" class="btn btn-primary">
+    정보 수정하기
+  </a>
+</div>
+
+</section>
+  </main>
+
+  <script>
+    function openWithdrawPopup() {
+      const popupWidth = 500;
+      const popupHeight = 650;
+      const left = (window.screen.width / 2) - (popupWidth / 2);
+      const top = (window.screen.height / 2) - (popupHeight / 2);
+      const options = `width=${popupWidth},height=${popupHeight},left=${left},top=${top},status=no,menubar=no,toolbar=no,resizable=no`;
+      window.open("withdraw.html", "withdrawPopup", options);
+    }
+  </script>
+</body>
+</html>

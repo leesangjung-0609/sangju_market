@@ -1,0 +1,627 @@
+/* ============================================
+  (1) 공통/기본 스타일
+============================================ */
+body {
+  margin: 0;
+  /* Changed: SUIT 폰트로 변경 */
+  font-family: 'SUIT', sans-serif;
+  /* Changed: main.html과 동일하게 배경색 변경 */
+  background-color: #f8f9fa;
+  color: #333;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* ============================================
+  (2) 네비게이션 바
+============================================ */
+nav {
+  /* Changed: main.html 스타일 적용 */
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px; /* main.html padding */
+  z-index: 1000;
+  box-sizing: border-box;
+}
+
+/* 로고 스타일 (좌측 고정) */
+.logo {
+  flex: 0 0 auto;
+}
+.logo a {
+  /* Changed: main.html 스타일 적용 */
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2b6cb0;
+}
+
+/* 검색창 스타일 (중앙 가변) */
+.search-bar {
+  flex: 1 1 auto;
+  display: flex;
+  justify-content: center;
+  min-width: 150px;
+  margin: 0 20px;
+}
+.search-bar input {
+  /* Changed: main.html 스타일 적용 */
+  width: 300px;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 20px;
+  background-color: #a8d0ff;
+  color: white;
+  font-weight: 500;
+  transition: 0.2s;
+}
+.search-bar input::placeholder {
+  color: white;
+}
+.search-bar input:focus {
+  outline: none;
+  background-color: #90c4ff;
+  box-shadow: 0 0 6px rgba(43, 108, 176, 0.4);
+}
+
+/* 메뉴 스타일 (우측 고정) */
+ul.menu {
+  list-style: none;
+  /* Changed: main.html 스타일 적용 (오른쪽 고정) */
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  gap: 20px; /* main.html gap */
+  flex-wrap: wrap;
+}
+ul.menu > li {
+  position: relative;
+  margin: 0;
+  cursor: pointer;
+}
+ul.menu > li > a {
+  /* Changed: 흰색 nav bar에 맞게 글자색 변경 */
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+ul.menu > li:hover > a {
+  color: #2b6cb0;
+}
+
+ul.submenu {
+  /* Changed: 흰색 nav bar에 맞게 스타일 통일 */
+  position: absolute;
+  top: 100%;
+  right: 0; /* 기본적으로 오른쪽 정렬 (main.html의 로그인/회원가입 기준) */
+  background-color: #fff;
+  border: 1px solid #ddd;
+  list-style: none;
+  padding: 8px 0;
+  border-radius: 8px;
+  min-width: 140px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: none;
+  z-index: 2000;
+}
+ul.submenu li {
+  padding: 8px 16px;
+}
+ul.submenu li a {
+  color: #333;
+  display: block;
+  font-size: 0.9rem;
+}
+ul.menu > li:hover ul.submenu {
+  display: block;
+}
+
+/* ============================================
+  (3) 카테고리 사이드바 & 상품 목록 레이아웃
+============================================ */
+
+/* 카테고리 사이드바 */
+.category-sidebar {
+  /* Changed: main.html 스타일 적용 */
+  position: fixed;
+  top: 70px; /* nav bar 높이(약 65px)를 고려하여 70px 설정 (main.html과 동일) */
+  left: 0;
+  width: 200px;
+  /* nav bar 높이를 뺀 나머지 영역을 채움 */
+  height: calc(100vh - 70px); 
+  background-color: #e6f3ff;
+  border-right: 1px solid #cfddee;
+  padding: 20px;
+  overflow-y: auto;
+  z-index: 900;
+  box-sizing: border-box;
+}
+
+.category-sidebar h3 {
+  /* Changed: main.html 스타일 적용 */
+  margin-top: 0;
+  color: #2b6cb0;
+  font-size: 1.1rem;
+  border-bottom: 2px solid #bcdcff;
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+}
+
+.category-sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.category-sidebar li {
+  /* Changed: main.html 스타일 적용 */
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+  margin-bottom: 4px;
+}
+
+.category-sidebar li:hover {
+  /* Changed: main.html 스타일 적용 */
+  background-color: #cde4ff;
+  color: #2b6cb0;
+  font-weight: 600;
+}
+
+/* 상품 목록 컨테이너 */
+.product-container {
+  /* Changed: nav bar와 sidebar를 모두 피하는 마진 적용 (main.html과 동일) */
+  margin-left: 250px; /* 200px(sidebar) + 50px(마진/패딩) */
+  margin-top: 90px; /* nav bar 높이 + 여백 */
+  padding: 20px;
+  box-sizing: border-box;
+
+  /* Changed: main.html의 반응형 그리드 스타일 적용 */
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 24px;
+}
+
+/* 상품 아이템 */
+.product-item {
+  /* Changed: main.html 스타일 적용 */
+  background-color: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  transition: 0.3s;
+  overflow: hidden;
+}
+
+.product-item:hover {
+  /* Changed: main.html 스타일 적용 */
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  color: #2b6cb0;
+}
+
+.product-item img {
+  /* Changed: main.html 스타일 적용 */
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.product-item .name {
+  /* Changed: main.html 스타일 적용 */
+  font-size: 1rem;
+  font-weight: 600;
+  margin-top: 8px;
+  color: #333;
+  padding: 0 5px;
+}
+
+.product-item .price {
+  /* Changed: main.html의 가격 색상으로 통일 */
+  font-size: 0.9rem;
+  color: #2b6cb0;
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+
+
+/* ============================================
+  (4) 페이지 콘텐츠 및 다른 페이지 컨테이너
+============================================ */
+
+/* 다른 페이지(내 정보, 등록 등) 컨테이너 */
+.container {
+  max-width: 1200px;
+  /* Changed: nav bar 높이에 맞게 마진 상단 여백 조정 */
+  margin: 90px auto 60px auto; 
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+main.container {
+  /* 기존 main.container를 일반 .container에 통합하여 통일 */
+  max-width: 1000px;
+  margin: 90px auto 40px auto;
+  padding: 30px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.page-section {
+  margin-bottom: 50px;
+}
+.page-section h2, .container h2 {
+  font-size: 24px;
+  color: #2c3e50;
+  border-bottom: 2px solid #eaeaea;
+  padding-bottom: 10px;
+  margin-bottom: 25px;
+  text-align: center;
+}
+/* 메뉴 아래 불필요한 여백 제거 */
+body::before {
+  content: none;
+}
+
+
+/* ============================================
+  (5) 폼 스타일
+============================================ */
+.form-group {
+  margin-bottom: 20px;
+}
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #34495e;
+}
+.form-group input[type="text"],
+.form-group input[type="password"] {
+  width: 95%;
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 15px;
+}
+.form-group input[readonly] {
+  background-color: #f4f4f4;
+  cursor: not-allowed;
+}
+
+
+/* ============================================
+  (6) 버튼 공통
+============================================ */
+.btn {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+.btn-primary {
+  /* Changed: 메인 테마 색상(#2b6cb0)으로 통일 */
+  background-color: #2b6cb0; 
+  color: white;
+}
+.btn-primary:hover {
+  /* Changed: 호버 시 약간 어두운 파란색 */
+  background-color: #22588f; 
+}
+.btn-danger {
+  /* 기존 유지: 빨간색 */
+  background-color: #e74c3c;
+  color: white;
+}
+.btn-danger:hover {
+  /* 기존 유지: 빨간색 */
+  background-color: #c0392b;
+}
+
+/* 추가 버튼 스타일 (등록 페이지용) */
+.add-btn {
+  /* Changed: 메인 테마 색상(#2b6cb0)으로 통일 */
+  background-color: #2b6cb0; 
+  color: white;
+  margin-top: 30px;
+  padding: 12px 20px;
+  display: block;
+  width: 100%;
+  border-radius: 8px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.2s;
+}
+
+.add-btn:hover {
+  /* Changed: 호버 시 약간 어두운 파란색 */
+  background-color: #22588f;
+}
+.edit-btn {
+  background-color: #f39c12;
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.2s;
+}
+
+.edit-btn:hover {
+  background-color: #d68910;
+}
+
+.delete-btn {
+  background-color: #e74c3c;
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.2s;
+}
+
+.delete-btn:hover {
+  background-color: #c0392b;
+}
+
+
+/* ============================================
+  (7) 내 정보 / 목록 / 후기 등 나머지 스타일
+============================================ */
+
+/* 내 정보 보여주는 레이아웃 */
+.info-display {
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 10px 20px;
+  background-color: #fafafa;
+}
+.info-row {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  padding: 18px 10px;
+  border-bottom: 1px solid #e0e0e0;
+}
+.info-row:last-child {
+  border-bottom: none;
+}
+.info-label {
+  font-weight: 500;
+  color: #34495e;
+  width: 150px;
+  flex-shrink: 0;
+}
+.info-value {
+  font-weight: 400;
+  color: #333;
+}
+.button-container {
+  text-align: center;
+  margin-top: 40px;
+}
+
+/* 등록한 상품 목록 그리드 (등록.html) */
+.product-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+/* 상품 카드 스타일 (등록.html) */
+.product-card {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s, box-shadow 0.3s;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.product-img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  background-color: #eee;
+}
+
+.product-info {
+  padding: 15px;
+  flex-grow: 1;
+}
+
+.product-name {
+  font-size: 17px;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 5px;
+}
+
+.product-desc {
+  color: #555;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.product-price {
+  /* 이 부분은 main.html의 가격(blue)과 통일되어야 합니다. */
+  color: #2b6cb0; 
+  font-weight: bold;
+}
+
+.btn-group {
+  display: flex;
+  justify-content: space-around;
+  border-top: 1px solid #eee;
+  padding: 10px;
+  background: #fafafa;
+}
+
+/* 찜 목록 / 후기 목록 스타일 */
+.item-list {
+  list-style: none;
+  padding: 0;
+}
+.item-list-item {
+  display: flex;
+  align-items: center;
+  border: 1px solid #eee;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 6px;
+}
+.item-list-item img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-right: 20px;
+  background-color: #f0f0f0;
+}
+.item-info {
+  flex-grow: 1;
+}
+.item-info h4 {
+  margin: 0 0 5px 0;
+}
+.item-info h4 a {
+  text-decoration: none;
+  color: #2c3e50;
+  font-size: 17px;
+}
+.item-info h4 a:hover {
+  text-decoration: underline;
+}
+.item-info .price {
+  font-weight: bold;
+  /* Changed: 찜/후기 목록의 가격은 시인성을 위해 기존 색상 유지 (주황) */
+  color: #2b6cb0; 
+  font-size: 16px;
+  margin: 0;
+}
+.item-info .seller {
+  margin: 5px 0 0 0;
+  color: #7f8c8d;
+  font-size: 14px;
+}
+
+/* 평점 / 후기 내용 스타일 */
+.rating {
+  color: #f39c12;
+  font-size: 18px;
+  margin-bottom: 5px;
+}
+.review-content {
+  margin: 5px 0 0 0;
+  color: #333;
+}
+
+/* 평점 요약 */
+.rating-summary {
+  text-align: center;
+  padding: 20px;
+  background-color: #fafafa;
+  border-radius: 8px;
+}
+.rating-summary h3 {
+  font-size: 28px;
+  color: #2c3e50;
+  margin: 0 0 10px 0;
+}
+.rating-summary .rating-visual {
+  font-size: 30px;
+  color: #f39c12;
+}
+.rating-summary p {
+  font-size: 16px;
+  color: #555;
+}
+
+/* 회원 탈퇴 경고 */
+.withdraw-warning {
+  background-color: #fdf2f2;
+  border: 1px solid #e57373;
+  color: #c0392b;
+  padding: 20px;
+  border-radius: 6px;
+  margin-bottom: 25px;
+}
+.withdraw-warning h4 {
+  margin: 0 0 10px 0;
+}
+
+/* ============================================
+  (8) 반응형 (main.html 스타일 반영)
+============================================ */
+@media screen and (max-width: 768px) {
+  nav {
+    /* Changed: main.html 스타일 적용 */
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px 20px;
+    height: auto;
+  }
+  .search-bar {
+    /* Changed: main.html 스타일 적용 */
+    width: 100%;
+    margin: 10px 0;
+    justify-content: flex-start;
+  }
+  .search-bar input {
+    width: 100%;
+  }
+  ul.menu {
+    /* Changed: main.html 스타일 적용 */
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    margin: 0;
+    padding: 0;
+  }
+  .category-sidebar {
+    /* Changed: main.html 스타일 적용 */
+    display: none;
+  }
+  .product-container {
+    /* Changed: nav bar가 확장되므로 top 마진을 넉넉하게 줌 (main.html과 동일) */
+    margin-left: 0;
+    margin-top: 150px;
+    /* Changed: main.html과 동일한 최소 너비 설정 */
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); 
+  }
+  /* 다른 페이지 컨테이너도 모바일에서 nav바 여백 확보 */
+  .container, main.container {
+    margin-top: 150px;
+  }
+}
