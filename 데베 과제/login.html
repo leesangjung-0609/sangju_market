@@ -7,42 +7,38 @@
   <link href="https://fonts.googleapis.com/css2?family=SUIT:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     body {
-      /* Changed: SUIT 폰트, 배경색 #f8f9fa로 통일 */
       font-family: 'SUIT', sans-serif;
-      background-color: #f8f9fa; 
+      background-color: #f8f9fa;
       margin: 0;
       padding: 0;
     }
     .top-bar {
-      /* Changed: 흰색, 고정 내비게이션 스타일로 변경 */
       display: flex;
       align-items: center;
       justify-content: center;
       background-color: #ffffff;
-      color: #333; 
+      color: #333;
       padding: 12px 20px;
       border-bottom: 1px solid #e0e0e0;
-      position: fixed; 
+      position: fixed;
       top: 0;
       width: 100%;
       z-index: 1000;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
     .logo {
-      /* Changed: 메인 테마 로고 색상 및 크기(1.5rem, 700)로 통일 */
       font-size: 1.5rem;
       font-weight: 700;
       cursor: pointer;
-      color: #2b6cb0; 
+      color: #2b6cb0;
       text-decoration: none;
     }
     .top-bar a.home {
-      display: none; /* 사용하지 않는 스타일 제거 */
+      display: none;
     }
     .container {
       max-width: 400px;
-      /* Changed: 고정 헤더 높이만큼 마진 조정 */
-      margin: 120px auto 60px auto; 
+      margin: 120px auto 60px auto;
       background: #fff;
       padding: 30px 40px;
       border-radius: 12px;
@@ -55,26 +51,24 @@
     }
     button {
       width: 100%; padding: 12px;
-      /* Changed: 메인 테마 색상 #2b6cb0로 통일 */
-      background-color: #2b6cb0; 
+      background-color: #2b6cb0;
       color: white;
       border: none; border-radius: 8px;
       font-size: 16px; cursor: pointer;
       margin-top: 20px; transition: background-color 0.3s;
     }
-    button:hover { 
-      /* Changed: 호버 색상 #22588f로 통일 */
-      background-color: #22588f; 
+    button:hover {
+      background-color: #22588f;
     }
     .toggle { text-align: center; margin-top: 25px; color: #555; font-size: 15px; }
-    .toggle span, .toggle a span { 
-      /* Changed: 강조 색상 #2b6cb0로 통일 */
-      color: #2b6cb0; 
+    .toggle span, .toggle a span {
+      color: #2b6cb0;
       cursor: pointer; font-weight: 600; text-decoration: none;
     }
     .hidden { display: none; }
     .error-message { color: #e74c3c; text-align: center; margin-top: 15px; font-weight: bold; }
     .success-message { color: #27ae60; text-align: center; margin-top: 15px; font-weight: bold; }
+    .id-display { color: #2b6cb0; text-align: center; margin-top: 15px; font-size: 18px; font-weight: 700; }
   </style>
 </head>
 <body>
@@ -83,7 +77,6 @@
     <a href="main.html" class="logo">Re:Born</a>
   </div>
 
-  <!-- 로그인 폼 -->
   <div class="container" id="loginForm">
     <h2>로그인</h2>
     <label for="loginId">아이디</label>
@@ -93,24 +86,42 @@
     <button onclick="login()">로그인</button>
     <div class="toggle">
       계정이 없으신가요? <a href="signup.html"><span>회원가입</span></a><br>
-      비밀번호를 잊으셨나요? <span onclick="toggleForm('findPw')">비밀번호 찾기</span>
+      아이디/비밀번호를 잊으셨나요? <span onclick="toggleForm('findId')">아이디 찾기</span>/<span onclick="toggleForm('findPw')">비밀번호 찾기</span>
     </div>
   </div>
 
-  <!-- 비밀번호 찾기 -->
-  <div class="container hidden" id="findPwForm">
-    <h2>비밀번호 찾기</h2>
-    <label for="findEmail">가입한 이메일</label>
-    <input type="email" id="findEmail" placeholder="가입 시 이메일 입력">
-    <button onclick="checkEmail()">다음</button>
-    <div id="findMsg" class="error-message hidden"></div>
+  <div class="container hidden" id="findIdForm">
+    <h2>아이디 찾기</h2>
+    <div id="findIdStep1">
+      <label for="findIdEmail">가입한 이메일</label>
+      <input type="email" id="findIdEmail" placeholder="가입 시 이메일 입력">
+      <button onclick="findIdByEmail()">아이디 찾기</button>
+      <div id="findIdMsg" class="error-message hidden"></div>
+    </div>
+
+    <div id="findIdResult" class="hidden">
+      <p>고객님의 아이디는 다음과 같습니다.</p>
+      <div id="displayId" class="id-display"></div>
+      <button onclick="toggleForm('login')">로그인 화면으로 이동</button>
+    </div>
 
     <div class="toggle">
       <span onclick="toggleForm('login')">← 로그인으로 돌아가기</span>
     </div>
   </div>
 
-  <!-- 비밀번호 재설정 -->
+  <div class="container hidden" id="findPwForm">
+    <h2>비밀번호 찾기</h2>
+    <label for="findPwEmail">가입한 이메일</label>
+    <input type="email" id="findPwEmail" placeholder="가입 시 이메일 입력">
+    <button onclick="checkEmailForPw()">다음</button>
+    <div id="findPwMsg" class="error-message hidden"></div>
+
+    <div class="toggle">
+      <span onclick="toggleForm('login')">← 로그인으로 돌아가기</span>
+    </div>
+  </div>
+
   <div class="container hidden" id="resetPwForm">
     <h2>비밀번호 재설정</h2>
     <label for="newPw">새 비밀번호</label>
@@ -126,20 +137,41 @@
 
   <script>
     const loginForm = document.getElementById('loginForm');
+    const findIdForm = document.getElementById('findIdForm');
+    const findIdMsg = document.getElementById('findIdMsg');
+    const findIdStep1 = document.getElementById('findIdStep1');
+    const findIdResult = document.getElementById('findIdResult');
+    const displayId = document.getElementById('displayId');
     const findPwForm = document.getElementById('findPwForm');
     const resetPwForm = document.getElementById('resetPwForm');
-    const findMsg = document.getElementById('findMsg');
+    const findPwMsg = document.getElementById('findPwMsg');
     const resetMsg = document.getElementById('resetMsg');
     let currentUser = null;
 
     function toggleForm(type) {
       loginForm.classList.add('hidden');
+      findIdForm.classList.add('hidden');
       findPwForm.classList.add('hidden');
       resetPwForm.classList.add('hidden');
 
+      findIdMsg.classList.add('hidden');
+      findPwMsg.classList.add('hidden');
+      resetMsg.textContent = '';
+
       if (type === 'login') loginForm.classList.remove('hidden');
-      else if (type === 'findPw') findPwForm.classList.remove('hidden');
-      else if (type === 'resetPw') resetPwForm.classList.remove('hidden');
+      else if (type === 'findId') {
+        findIdForm.classList.remove('hidden');
+        findIdStep1.classList.remove('hidden');
+        findIdResult.classList.add('hidden');
+        document.getElementById('findIdEmail').value = '';
+      } else if (type === 'findPw') {
+        findPwForm.classList.remove('hidden');
+        document.getElementById('findPwEmail').value = '';
+      } else if (type === 'resetPw') {
+        resetPwForm.classList.remove('hidden');
+        document.getElementById('newPw').value = '';
+        document.getElementById('newPwConfirm').value = '';
+      }
     }
 
     function login() {
@@ -153,31 +185,73 @@
       } else alert("아이디 또는 비밀번호가 올바르지 않습니다.");
     }
 
-    function checkEmail() {
-      const email = document.getElementById('findEmail').value;
+    function findIdByEmail() {
+      const email = document.getElementById('findIdEmail').value;
       const userData = JSON.parse(localStorage.getItem('user'));
-      if (!email) { findMsg.textContent = "이메일을 입력해주세요!"; findMsg.classList.remove('hidden'); return; }
+
+      findIdMsg.classList.add('hidden');
+
+      if (!email) {
+        findIdMsg.textContent = "이메일을 입력해주세요!";
+        findIdMsg.classList.remove('hidden');
+        return;
+      }
+
+      if (userData && userData.email === email) {
+        displayId.textContent = userData.id;
+        findIdStep1.classList.add('hidden');
+        findIdResult.classList.remove('hidden');
+      } else {
+        findIdMsg.textContent = "등록된 이메일이 없거나, 가입 정보가 일치하지 않습니다.";
+        findIdMsg.classList.remove('hidden');
+      }
+    }
+
+    function checkEmailForPw() {
+      const email = document.getElementById('findPwEmail').value;
+      const userData = JSON.parse(localStorage.getItem('user'));
+
+      findPwMsg.classList.add('hidden');
+
+      if (!email) {
+        findPwMsg.textContent = "이메일을 입력해주세요!";
+        findPwMsg.classList.remove('hidden');
+        return;
+      }
       if (userData && userData.email === email) {
         currentUser = userData;
         toggleForm('resetPw');
       } else {
-        findMsg.textContent = "등록된 이메일이 없습니다.";
-        findMsg.classList.remove('hidden');
+        findPwMsg.textContent = "등록된 이메일이 없습니다.";
+        findPwMsg.classList.remove('hidden');
       }
     }
 
     function resetPassword() {
       const newPw = document.getElementById('newPw').value;
       const confirmPw = document.getElementById('newPwConfirm').value;
-      if (!newPw || !confirmPw) { resetMsg.textContent = "모든 칸을 입력해주세요!"; resetMsg.className = "error-message"; return; }
-      if (newPw !== confirmPw) { resetMsg.textContent = "비밀번호가 일치하지 않습니다!"; resetMsg.className = "error-message"; return; }
+
+      resetMsg.textContent = '';
+
+      if (!newPw || !confirmPw) {
+        resetMsg.textContent = "모든 칸을 입력해주세요!";
+        resetMsg.className = "error-message";
+        return;
+      }
+      if (newPw !== confirmPw) {
+        resetMsg.textContent = "비밀번호가 일치하지 않습니다!";
+        resetMsg.className = "error-message";
+        return;
+      }
 
       let userData = JSON.parse(localStorage.getItem('user'));
-      userData.pw = newPw;
-      localStorage.setItem('user', JSON.stringify(userData));
-      resetMsg.textContent = "✅ 비밀번호가 성공적으로 변경되었습니다!";
-      resetMsg.className = "success-message";
-      setTimeout(() => toggleForm('login'), 2000);
+      if (userData.id === currentUser.id) {
+        userData.pw = newPw;
+        localStorage.setItem('user', JSON.stringify(userData));
+        resetMsg.textContent = "✅ 비밀번호가 성공적으로 변경되었습니다!";
+        resetMsg.className = "success-message";
+        setTimeout(() => toggleForm('login'), 2000);
+      }
     }
   </script>
 </body>
