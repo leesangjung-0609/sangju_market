@@ -5,9 +5,83 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>내 정보 - 중고마켓</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ------------------------------
+       판매/구매 내역 카드 스타일
+    ------------------------------ */
+    .history-section {
+      margin-top: 40px;
+      padding: 20px;
+      border-top: 2px solid #ddd;
+    }
+
+    .history-section h3 {
+      margin-bottom: 15px;
+      color: #333;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+    }
+
+    .product-card {
+      background-color: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      transition: 0.3s;
+      text-align: center;
+    }
+
+    .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      color: #2b6cb0;
+    }
+
+    .product-card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+    }
+
+    .card-content {
+      padding: 10px 14px;
+    }
+
+    .card-content h4 {
+      font-size: 16px;
+      margin-bottom: 6px;
+      color: #222;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .price {
+      color: #0078ff;
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    .date {
+      font-size: 13px;
+      color: #666;
+    }
+
+    .product-card a {
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+  </style>
 </head>
+
 <body>
-    <nav>
+  <!-- 네비게이션 -->
+  <nav>
     <div class="logo">
       <a href="main.html">Re:Born</a>
     </div>
@@ -17,36 +91,34 @@
     </div>
 
     <ul class="menu">
-        <li>
-            <a href="#">마이 페이지</a>
-            <ul class="submenu" style="left: -30px;">
-            <li><a href="my_info.html">내 정보</a></li>
-            <li><a href="goods_reg.html">등록한 상품 목록</a></li>
-            <li><a href="rating.html">후기 / 평점</a></li>
-            <li><a href="javascript:void(0);" onclick = "openWithdrawPopup()">탈퇴하기</a></li>
-            </li>
-            </ul>
-        </li>
+      <li>
+        <a href="#">마이 페이지</a>
+        <ul class="submenu" style="left: -30px;">
+          <li><a href="my_info.html">내 정보</a></li>
+          <li><a href="goods_reg.html">등록한 상품 목록</a></li>
+          <li><a href="rating.html">후기 / 평점</a></li>
+          <li><a href="javascript:void(0);" onclick="openWithdrawPopup()">탈퇴하기</a></li>
+        </ul>
+      </li>
 
-
-        <li>
-            <a href="#">로그인/회원가입</a>
-            <ul class="submenu">
-            <li><a href="login.html">로그인</a></li>
-            <li><a href="signup.html">회원가입</a></li>
-            </ul>
-        </li>
+      <li>
+        <a href="#">로그인/회원가입</a>
+        <ul class="submenu">
+          <li><a href="login.html">로그인</a></li>
+          <li><a href="signup.html">회원가입</a></li>
+        </ul>
+      </li>
     </ul>
   </nav>
 
-<main class="container">
+  <main class="container">
     <section id="my-info-view" class="page-section">
       <h2>내 정보</h2>
       
       <div class="info-display">
         <div class="info-row">
           <span class="info-label">아이디</span>
-          <span class="info-value">honggildong</span> 
+          <span class="info-value">honggildong</span>
         </div>
         <div class="info-row">
           <span class="info-label">닉네임</span>
@@ -55,12 +127,65 @@
       </div>
       
       <div class="button-container">
-  <a href="my_info_edit.html" class="btn btn-primary">
-    정보 수정하기
-  </a>
-</div>
+        <a href="my_info_edit.html" class="btn btn-primary">정보 수정하기</a>
+      </div>
+    </section>
 
-</section>
+    <!-- ✅ 판매 내역 -->
+    <section class="history-section">
+      <h3>판매 내역</h3>
+      <div class="card-grid" id="sales-list">
+        <div class="product-card">
+          <a href="product_detail.html?id=1">
+            <img src="activity.jpg" alt="상품1">
+            <div class="card-content">
+              <h4>상품1</h4>
+              <p class="price">10,000원</p>
+              <p class="date">판매일: 2025-10-05</p>
+            </div>
+          </a>
+        </div>
+
+        <div class="product-card">
+          <a href="product_detail.html?id=2">
+            <img src="healing.jpg" alt="상품2">
+            <div class="card-content">
+              <h4>상품2</h4>
+              <p class="price">12,000원</p>
+              <p class="date">판매일: 2025-09-28</p>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ✅ 구매 내역 -->
+    <section class="history-section">
+      <h3>구매 내역</h3>
+      <div class="card-grid" id="purchase-list">
+        <div class="product-card">
+          <a href="product_detail.html?id=3">
+            <img src="https://via.placeholder.com/220" alt="상품3">
+            <div class="card-content">
+              <h4>상품3</h4>
+              <p class="price">8,000원</p>
+              <p class="date">구매일: 2025-10-12</p>
+            </div>
+          </a>
+        </div>
+
+        <div class="product-card">
+          <a href="product_detail.html?id=4">
+            <img src="https://via.placeholder.com/220" alt="상품4">
+            <div class="card-content">
+              <h4>상품4</h4>
+              <p class="price">15,000원</p>
+              <p class="date">구매일: 2025-09-10</p>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
   </main>
 
   <script>
