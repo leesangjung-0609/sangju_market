@@ -6,78 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>내 정보 - 중고마켓</title>
   <link rel="stylesheet" href="style.css" />
-  <style>
-    /* ------------------------------
-       판매/구매 내역 카드 스타일
-    ------------------------------ */
-    .history-section {
-      margin-top: 40px;
-      padding: 20px;
-      border-top: 2px solid #ddd;
-    }
-
-    .history-section h3 {
-      margin-bottom: 15px;
-      color: #333;
-    }
-
-    .card-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 20px;
-    }
-
-    .product-card {
-      background-color: #fff;
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-      transition: 0.3s;
-      text-align: center;
-    }
-
-    .product-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      color: #2b6cb0;
-    }
-
-    .product-card img {
-      width: 100%;
-      height: 180px;
-      object-fit: cover;
-    }
-
-    .card-content {
-      padding: 10px 14px;
-    }
-
-    .card-content h4 {
-      font-size: 16px;
-      margin-bottom: 6px;
-      color: #222;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .price {
-      color: #0078ff;
-      font-weight: bold;
-      margin-bottom: 4px;
-    }
-
-    .date {
-      font-size: 13px;
-      color: #666;
-    }
-
-    .product-card a {
-      text-decoration: none;
-      color: inherit;
-      display: block;
-    }
-  </style>
 </head>
 
 <body>
@@ -88,7 +16,10 @@
     </div>
 
     <div class="search-bar">
-      <input type="text" placeholder="상품명, 카테고리 검색..." />
+      <div class="search-container">
+        <input type="text" id="searchInput" placeholder="상품명, 카테고리 검색..." oninput="showHideClearButton()" />
+        <button class="clear-btn" id="clearBtn" onclick="clearSearchInput()" style="display: none;">&times;</button>
+      </div>
     </div>
 
     <ul class="menu">
@@ -227,6 +158,24 @@
       const top = (window.screen.height / 2) - (popupHeight / 2);
       const options = `width=${popupWidth},height=${popupHeight},left=${left},top=${top},status=no,menubar=no,toolbar=no,resizable=no`;
       window.open("withdraw.html", "withdrawPopup", options);
+    }
+    // 검색창 X버튼
+    function clearSearchInput() {
+      const searchInput = document.getElementById('searchInput');
+      searchInput.value = '';
+      showHideClearButton();
+      searchInput.focus();
+    }
+
+    function showHideClearButton() {
+      const searchInput = document.getElementById('searchInput');
+      const clearBtn = document.getElementById('clearBtn');
+
+      if (searchInput.value.length > 0) {
+        clearBtn.style.display = 'block';
+      } else {
+        clearBtn.style.display = 'none';
+      }
     }
   </script>
 </body>
