@@ -763,3 +763,75 @@ main.container {
 .profile-container .info-display {
   flex-grow: 1;
 }
+
+
+/* ------------------------------
+ 🔹 가격 필터 (Compact 버전)
+------------------------------ */
+.price-filter {
+  margin-top: 15px;
+  padding: 10px;
+  background: #f3f7ff;
+  border-radius: 8px;
+  border: 1px solid #cfddee;
+  box-sizing: border-box;
+  width: 90%;
+}
+
+.price-filter h4 {
+  margin: 0 0 8px 0;
+  font-size: 0.95rem;
+  color: #2b6cb0;
+  text-align: center;
+}
+
+.filter-inputs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.filter-inputs input {
+  width: 60px;
+  padding: 4px 6px;
+  border: 1px solid #bcdcff;
+  border-radius: 5px;
+  text-align: center;
+  font-size: 0.85rem;
+}
+
+.filter-inputs span {
+  color: #555;
+  font-weight: 500;
+  font-size: 0.85rem;
+}
+
+.filter-buttons {
+  margin-top: 8px;
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.filter-buttons button {
+  flex: 1;
+  padding: 5px;
+  background-color: #2b6cb0;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.filter-buttons button:last-child {
+  background-color: #777;
+}
+
+.filter-buttons button:hover {
+  opacity: 0.9;
+}
