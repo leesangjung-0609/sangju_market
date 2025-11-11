@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>내 상품 관리</title>
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
 
   <nav>
@@ -21,32 +23,32 @@
     </div>
 
     <ul class="menu">
-        <li>
-            <a href="#">마이 페이지</a>
-            <ul class="submenu" style="left: -30px;">
-            <li><a href="my_info.html">내 정보</a></li>
-            <li><a href="goods_reg.html">등록한 상품 목록</a></li>
-            <li><a href="rating.html">후기 / 평점</a></li>
-            <li><a href="javascript:void(0);" onclick = "openWithdrawPopup()">탈퇴하기</a></li>
-            </li>
-            </ul>
-        </li>
+      <li>
+        <a href="#">마이 페이지</a>
+        <ul class="submenu" style="left: -30px;">
+          <li><a href="my_info.html">내 정보</a></li>
+          <li><a href="goods_reg.html">등록한 상품 목록</a></li>
+          <li><a href="rating.html">후기 / 평점</a></li>
+          <li><a href="javascript:void(0);" onclick="openWithdrawPopup()">탈퇴하기</a></li>
+      </li>
+    </ul>
+    </li>
 
 
-        <li>
-            <a href="#">로그인/회원가입</a>
-            <ul class="submenu">
-            <li><a href="login.html">로그인</a></li>
-            <li><a href="signup.html">회원가입</a></li>
-            </ul>
-        </li>
+    <li>
+      <a href="#">로그인/회원가입</a>
+      <ul class="submenu">
+        <li><a href="login.html">로그인</a></li>
+        <li><a href="signup.html">회원가입</a></li>
+      </ul>
+    </li>
     </ul>
   </nav>
 
   <div class="container">
     <h2>내 상품 목록</h2>
     <div class="product-list" id="productList"></div>
-    <button class="add-btn" onclick="goToAddPage()">새 상품 등록</button> <!-- Changed -->
+    <button class="add-btn" onclick="openAddPopup()">새 상품 등록</button> <!-- Changed -->
   </div>
 
   <script>
@@ -96,8 +98,13 @@
     }
 
     // Changed - 새 상품 등록 페이지 이동
-    function goToAddPage() {
-      window.location.href = "goods_reg_form.html"; // Changed
+    function openAddPopup() {
+      const popupWidth = 600;
+      const popupHeight = 700;
+      const left = (window.screen.width / 2) - (popupWidth / 2);
+      const top = (window.screen.height / 2) - (popupHeight / 2);
+      const options = `width=${popupWidth},height=${popupHeight},left=${left},top=${top},status=no,menubar=no,toolbar=no,resizable=no`;
+      window.open("goods_reg_form.html", "addProductPopup", options);
     }
     function openWithdrawPopup() {
       const popupWidth = 500;
@@ -127,4 +134,5 @@
   </script>
 
 </body>
+
 </html>

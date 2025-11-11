@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -104,9 +105,17 @@
         판매자: <strong>db의신</strong>
       </div>
 
-      <button id="buyBtn" style="margin-top:25px; padding:12px 25px; background:#2c7be5; color:white; border:none; border-radius:6px; font-size:16px; cursor:pointer;">
-        구매하기
-      </button>
+      <div style="margin-top: 20px; display: flex; gap: 12px;">
+        <button id="buyBtn"
+          style="padding:12px 25px; background:#2c7be5; color:white; border:none; border-radius:6px; font-size:16px; cursor:pointer;">
+          구매하기
+        </button>
+
+        <button id="likeBtn"
+          style="padding:12px 20px; background:#e74c3c; color:white; border:none; border-radius:6px; font-size:16px; cursor:pointer;">
+          ♥ 좋아요
+        </button>
+      </div>
     </div>
   </div>
 
@@ -120,6 +129,14 @@
       window.open("withdraw.html", "withdrawPopup", options);
     }
 
+    const product = {
+      id: 1, // 실제 DB에서 가져오는 상품 ID
+      name: "상품명 예시",
+      price: 10000,
+      img: "https://via.placeholder.com/350",
+      seller: "db의신"
+    };
+
     document.getElementById("buyBtn").addEventListener("click", function () {
       alert("구매 요청이 완료되었습니다! 판매자와 채팅을 시작합니다.");
     });
@@ -128,6 +145,17 @@
       window.location.href = 'seller.html';
     });
 
+    document.getElementById("likeBtn").addEventListener("click", function () {
+      let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+      // 이미 찜 목록에 있는지 확인
+      if (!favorites.some(fav => fav.id === product.id)) {
+        favorites.push(product);
+        localStorage.setItem("favorites", JSON.stringify(favorites));
+        alert("찜 목록에 추가되었습니다!");
+      } else {
+        alert("이미 찜 목록에 있습니다.");
+      }
+    });
     function clearSearchInput() {
       const searchInput = document.getElementById('searchInput');
       searchInput.value = '';
@@ -143,4 +171,5 @@
   </script>
 
 </body>
+
 </html>

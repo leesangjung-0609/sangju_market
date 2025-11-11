@@ -1,44 +1,68 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>상품 등록</title>
-  
+
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; }
-    input, textarea { width: 100%; padding: 10px; margin-bottom: 12px; border: 1px solid #ccc; border-radius: 4px; }
-    button { padding: 10px 20px; cursor: pointer; background: #333; color: #fff; border: none; border-radius: 4px; }
-    
-    /* 돌아가기 버튼 스타일 */ /* Changed */
-    .back-btn { 
-      background: #777; /* Changed */
-      margin-bottom: 15px; /* Changed */
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
     }
-    #category { 
+
+    input,
+    textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 12px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    /* 버튼 스타일 공통 */
+    button {
+      padding: 10px 20px;
+      cursor: pointer;
+      background-color: #2b6cb0;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #22588f;
+    }
+
+    /* 돌아가기 버튼만 따로 스타일 */
+    .back-btn {
+      background-color: #22588f;
+      margin-bottom: 15px;
+    }
+
+    #category {
       width: 200px;
-      display: block; 
+      display: block;
     }
   </style>
 </head>
+
 <body>
-
-  <!-- 돌아가기 버튼 추가 --> <!-- Changed -->
-  <button class="back-btn" onclick="location.href='goods_reg.html'">← 돌아가기</button> <!-- Changed -->
-
   <h2>새 상품 등록</h2>
 
   <form id="regForm">
     <input type="text" id="name" placeholder="상품명" required>
     <textarea id="desc" placeholder="상품 설명" required></textarea>
-    <input list="categoryList" id="category"  placeholder="카테고리 선택" required> <!-- Changed -->
-    <datalist id="categoryList"> 
-      <option value="옷" ></option> 
-      <option value="가전"></option> 
-      <option value="가구"></option> 
-      <option value="생활/주방"></option> 
-      <option value="취미/게임"></option> 
-      <option value="기타"></option> 
+    <input list="categoryList" id="category" placeholder="카테고리 선택" required>
+    <datalist id="categoryList">
+      <option value="옷"></option>
+      <option value="가전"></option>
+      <option value="가구"></option>
+      <option value="생활/주방"></option>
+      <option value="취미/게임"></option>
+      <option value="기타"></option>
     </datalist>
     <input type="number" id="price" placeholder="가격" required>
     <label for="imgFile">이미지 선택</label>
@@ -47,35 +71,29 @@
   </form>
 
   <script>
-    document.getElementById("regForm").addEventListener("submit", function(e) {
+    document.getElementById("regForm").addEventListener("submit", function (e) {
       e.preventDefault();
 
       const name = document.getElementById("name").value;
       const desc = document.getElementById("desc").value;
       const price = parseInt(document.getElementById("price").value);
+      const imgFile = document.getElementById("imgFile").files[0];
 
-      // 이미지 불러오기 부분 수정 (오타 수정)  // Changed
-      const imgFile = document.getElementById("imgFile").files[0]; // Changed
-      
-      let img = "https://via.placeholder.com/300x180?text=상품이미지"; // 기본값
-      if (imgFile) { // Changed
-        img = URL.createObjectURL(imgFile); // Changed
+      let img = "https://via.placeholder.com/300x180?text=상품이미지";
+      if (imgFile) {
+        img = URL.createObjectURL(imgFile);
       }
 
       const status = "판매중";
-
       const newProduct = { id: Date.now(), name, desc, price, img, status };
 
-      // Changed - 상품 데이터 localStorage 저장
       localStorage.setItem("newProduct", JSON.stringify(newProduct));
 
       alert("상품이 등록되었습니다!");
-      window.location.href = "goods_reg.html"; // 목록 페이지로 이동
+      window.location.href = "goods_reg.html";
     });
-    
   </script>
 
 </body>
+
 </html>
-
-
