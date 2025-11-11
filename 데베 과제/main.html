@@ -6,16 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>중고거래 사이트</title>
 
-  <!-- SUIT 폰트 불러오기 -->
+  <!-- SUIT 폰트 -->
   <link href="https://fonts.googleapis.com/css2?family=SUIT:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-  <style>
-   
-  </style>
 </head>
 
 <body>
-  <!-- 네비게이션 바 -->
+  <!-- ✅ 네비게이션 바 -->
   <nav>
     <div class="logo">
       <a href="main.html">Re:Born</a>
@@ -39,9 +36,8 @@
         </ul>
       </li>
 
-
       <li id="authMenu">
-        <a href="#" id="authLink" onclick="handleAuthClick(event)">로그인/회원가입</a>
+        <a href="#" id="authLink">로그인/회원가입</a>
         <ul class="submenu" id="authSubmenu">
           <li><a href="login.html">로그인</a></li>
           <li><a href="signup.html">회원가입</a></li>
@@ -50,7 +46,7 @@
     </ul>
   </nav>
 
-  <!-- 카테고리 사이드바 -->
+  <!-- ✅ 카테고리 + 가격 필터 -->
   <aside class="category-sidebar">
     <h3>카테고리</h3>
     <ul>
@@ -61,44 +57,56 @@
       <li>취미/게임</li>
       <li>기타</li>
     </ul>
+
+    <div class="price-filter">
+      <h4>가격 필터</h4>
+      <div class="filter-inputs">
+        <input type="number" id="minPrice" placeholder="최소" />
+        <span>~</span>
+        <input type="number" id="maxPrice" placeholder="최대" />
+      </div>
+      <div class="filter-buttons">
+        <button onclick="applyPriceFilter()">적용</button>
+        <button onclick="resetFilter()">초기화</button>
+      </div>
+    </div>
   </aside>
 
-  <!-- 상품 목록 -->
-  <div class="product-container">
-    <div class="product-item">
-      <a href="product_detail.html?id=1">
-        <img src="activity.jpg" alt="상품1">
-        <div class="name">상품1</div>
-        <div class="price">10,000원</div>
-      </a>
+  <!-- ✅ 상품 목록 -->
+  <div class="product-container" id="productContainer">
+    <div class="product-item" data-price="10000">
+      <img src="activity.jpg" alt="상품1">
+      <div class="name">상품1</div>
+      <div class="price">10,000원</div>
     </div>
 
-    <div class="product-item">
+    <div class="product-item" data-price="12000">
       <img src="healing.jpg" alt="상품2">
       <div class="name">상품2</div>
       <div class="price">12,000원</div>
     </div>
 
-    <div class="product-item">
+    <div class="product-item" data-price="8000">
       <img src="https://via.placeholder.com/200" alt="상품3">
       <div class="name">상품3</div>
       <div class="price">8,000원</div>
     </div>
 
-    <div class="product-item">
+    <div class="product-item" data-price="15000">
       <img src="https://via.placeholder.com/200" alt="상품4">
       <div class="name">상품4</div>
       <div class="price">15,000원</div>
     </div>
 
-    <div class="product-item">
+    <div class="product-item" data-price="20000">
       <img src="https://via.placeholder.com/200" alt="상품5">
       <div class="name">상품5</div>
       <div class="price">20,000원</div>
     </div>
   </div>
+
   <script>
-    // 회원 탈퇴 팝업
+    // ✅ 회원 탈퇴 팝업
     function openWithdrawPopup() {
       const popupWidth = 500;
       const popupHeight = 650;
@@ -108,7 +116,7 @@
       window.open("withdraw.html", "withdrawPopup", options);
     }
 
-    // 검색창 X버튼
+    // ✅ 검색창 X 버튼
     function clearSearchInput() {
       const searchInput = document.getElementById('searchInput');
       searchInput.value = '';
@@ -119,15 +127,34 @@
     function showHideClearButton() {
       const searchInput = document.getElementById('searchInput');
       const clearBtn = document.getElementById('clearBtn');
+      clearBtn.style.display = searchInput.value ? 'block' : 'none';
+    }
 
-      if (searchInput.value.length > 0) {
-        clearBtn.style.display = 'block';
-      } else {
-        clearBtn.style.display = 'none';
-      }
+    // ✅ 가격 필터 기능
+    function applyPriceFilter() {
+      const min = parseInt(document.getElementById('minPrice').value) || 0;
+      const max = parseInt(document.getElementById('maxPrice').value) || Infinity;
+      const products = document.querySelectorAll('.product-item');
+
+      products.forEach(item => {
+        const price = parseInt(item.dataset.price);
+        if (price >= min && price <= max) {
+          item.style.display = 'block';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    }
+
+    // ✅ 초기화 버튼
+    function resetFilter() {
+      document.getElementById('minPrice').value = '';
+      document.getElementById('maxPrice').value = '';
+      document.querySelectorAll('.product-item').forEach(item => {
+        item.style.display = 'block';
+      });
     }
   </script>
-
 </body>
 
 </html>
