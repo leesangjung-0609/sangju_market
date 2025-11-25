@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>로그인 / 비밀번호 찾기 (팝업)</title>
+  <link href="https://fonts.googleapis.com/css2?family=SUIT:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* 기본 스타일 유지 */
+    body {
+      font-family: 'SUIT', sans-serif;
+      background-color: #f8f9fa;
+      margin: 0;
+      padding: 0;
+    }
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #ffffff;
+      color: #333;
+      padding: 12px 20px;
+      border-bottom: 1px solid #e0e0e0;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      cursor: pointer;
+      color: #2b6cb0;
+      text-decoration: none;
+    }
+
+    .container {
+      max-width: 400px;
+      margin: 120px auto 60px auto;
+      background: #fff;
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #2c3e50;
+    }
+
+    label {
+      display: block;
+      margin: 15px 0 5px;
+      font-weight: 500;
+      color: #333;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    input[type="email"] {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-sizing: border-box;
+      font-size: 15px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #2b6cb0;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #22588f;
+    }
+
+    .toggle {
+      text-align: center;
+      margin-top: 25px;
+      color: #555;
+      font-size: 15px;
+    }
+
+    .toggle span,
+    .toggle a span {
+      color: #2b6cb0;
+      cursor: pointer;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .error-message {
+      color: #e74c3c;
+      text-align: center;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    .success-message {
+      color: #27ae60;
+      text-align: center;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    .id-display {
+      color: #2b6cb0;
+      text-align: center;
+      margin-top: 15px;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .content-hidden {
+      display: none;
+    }
+
+    /* 내부 콘텐츠 숨김용 */
+
+    /* 팝업 (모달) 스타일 */
+    .modal {
+      display: none;
+      /* 기본 숨김 */
+      position: fixed;
+      z-index: 2000;
+      /* top-bar보다 위 */
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.4);
+      /* 배경을 어둡게 */
+      padding-top: 60px;
+    }
+
+    .modal-content {
+      background-color: #fefefe;
+      margin: 10% auto;
+      /* 상단에서 10%, 중앙 정렬 */
+      padding: 30px 40px;
+      border: 1px solid #888;
+      width: 80%;
+      /* 모바일 환경 고려 */
+      max-width: 400px;
+      /* 최대 너비 */
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      position: relative;
+    }
+
+    .close-btn {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      text-decoration: none;
+    }
+
+    .close-btn:hover,
+    .close-btn:focus {
+      color: #333;
+      text-decoration: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="top-bar">
+    <a href="main.html" class="logo">Re:Born</a>
+  </div>
+
+  <div class="container" id="loginForm">
+    <h2>로그인</h2>
+    <label for="loginId">아이디</label>
+    <input type="text" id="loginId" placeholder="아이디 입력">
+    <label for="loginPw">비밀번호</label>
+    <input type="password" id="loginPw" placeholder="비밀번호 입력">
+    <button onclick="login()">로그인</button>
+    <div class="toggle">
+      계정이 없으신가요? <a href="signup.html"><span>회원가입</span></a><br>
+      아이디/비밀번호를 잊으셨나요?
+      <span onclick="openModal('findIdModal')">아이디 찾기</span> /
+      <span onclick="openModal('findPwModal')">비밀번호 찾기</span>
+    </div>
+  </div>
+
+  <div id="findIdModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal('findIdModal')">&times;</span>
+      <h2>아이디 찾기</h2>
+      <div id="findIdStep1">
+        <label for="findIdEmail">가입한 이메일</label>
+        <input type="email" id="findIdEmail" placeholder="가입 시 이메일 입력">
+        <button onclick="findIdByEmail()">아이디 찾기</button>
+        <div id="findIdMsg" class="error-message content-hidden"></div>
+      </div>
+
+      <div id="findIdResult" class="content-hidden">
+        <p>고객님의 아이디는 다음과 같습니다.</p>
+        <div id="displayId" class="id-display"></div>
+        <button onclick="closeModal('findIdModal')">로그인 화면으로 이동</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="findPwModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal('findPwModal')">&times;</span>
+      <h2>비밀번호 찾기</h2>
+      <label for="findPwEmail">가입한 이메일</label>
+      <input type="email" id="findPwEmail" placeholder="가입 시 이메일 입력">
+      <button onclick="checkEmailForPw()">다음</button>
+      <div id="findPwMsg" class="error-message content-hidden"></div>
+    </div>
+  </div>
+
+  <div id="resetPwModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal('resetPwModal')">&times;</span>
+      <h2>비밀번호 재설정</h2>
+      <label for="newPw">새 비밀번호</label>
+      <input type="password" id="newPw" placeholder="새 비밀번호 입력">
+      <label for="newPwConfirm">새 비밀번호 확인</label>
+      <input type="password" id="newPwConfirm" placeholder="다시 한 번 입력">
+      <button onclick="resetPassword()">비밀번호 변경</button>
+      <div id="resetMsg"></div>
+      <button onclick="closeModal('resetPwModal')" style="margin-top: 10px; background-color: #6c757d;">취소</button>
+    </div>
+  </div>
+
+
+  <script>
+const ADMIN_ID = "admin";
+const ADMIN_PW = "1234";
+
+const loginForm = document.getElementById('loginForm');
+const findIdMsg = document.getElementById('findIdMsg');
+const findIdStep1 = document.getElementById('findIdStep1');
+const findIdResult = document.getElementById('findIdResult');
+const displayId = document.getElementById('displayId');
+const findPwMsg = document.getElementById('findPwMsg');
+const resetMsg = document.getElementById('resetMsg');
+let currentUser = null;
+
+const findIdModal = document.getElementById('findIdModal');
+const findPwModal = document.getElementById('findPwModal');
+const resetPwModal = document.getElementById('resetPwModal');
+
+function openModal(modalId) {
+  findIdModal.style.display = 'none';
+  findPwModal.style.display = 'none';
+  resetPwModal.style.display = 'none';
+
+  document.getElementById(modalId).style.display = 'block';
+
+  if (modalId === 'findIdModal') {
+    findIdStep1.classList.remove('content-hidden');
+    findIdResult.classList.add('content-hidden');
+    findIdMsg.classList.add('content-hidden');
+    document.getElementById('findIdEmail').value = '';
+  }
+
+  if (modalId === 'findPwModal') {
+    findPwMsg.classList.add('content-hidden');
+    document.getElementById('findPwEmail').value = '';
+  }
+
+  if (modalId === 'resetPwModal') {
+    resetMsg.textContent = '';
+    document.getElementById('newPw').value = '';
+    document.getElementById('newPwConfirm').value = '';
+  }
+}
+
+function closeModal(modalId) {
+  document.getElementById(modalId).style.display = 'none';
+}
+
+function login() {
+    const id = document.getElementById('loginId').value;
+    const pw = document.getElementById('loginPw').value;
+
+    if (!id || !pw) {
+        alert("아이디와 비밀번호를 입력해주세요.");
+        return;
+    }
+
+    // ⭐ 서버로 로그인 요청 보내기 ⭐
+    fetch("/user/login", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            username: id,
+            password: pw
+        })
+    })
+    .then((res) => res.json())
+    .then((data) => {
+        if (data.message === "로그인 성공") {
+            // 로그인 성공 → 세션처럼 localStorage에 저장
+            localStorage.setItem("isLoggedIn", "true");
+            localStorage.setItem("loggedInUser", data.username);
+            localStorage.setItem("userId", data.userId);
+            localStorage.setItem("username", data.username);
+            
+            alert(`${data.username}님 환영합니다!`);
+            window.location.href = "main.html";
+        } else {
+            alert(data);
+        }
+    })
+    .catch((error) => {
+        console.error("로그인 오류:", error);
+        alert("서버 오류가 발생했습니다.");
+    });
+}
+
+function findIdByEmail() {
+  const email = document.getElementById('findIdEmail').value;
+  const userData = JSON.parse(localStorage.getItem('user'));
+
+  findIdMsg.classList.add('content-hidden');
+
+  if (!email) {
+    findIdMsg.textContent = "이메일을 입력해주세요!";
+    findIdMsg.classList.remove('content-hidden');
+    return;
+  }
+
+  if (userData && userData.email === email) {
+    displayId.textContent = userData.id;
+    findIdStep1.classList.add('content-hidden');
+    findIdResult.classList.remove('content-hidden');
+  } else {
+    findIdMsg.textContent = "등록된 이메일이 없거나, 가입 정보가 일치하지 않습니다.";
+    findIdMsg.classList.remove('content-hidden');
+  }
+}
+
+function checkEmailForPw() {
+  const email = document.getElementById('findPwEmail').value;
+  const userData = JSON.parse(localStorage.getItem('user'));
+
+  findPwMsg.classList.add('content-hidden');
+
+  if (!email) {
+    findPwMsg.textContent = "이메일을 입력해주세요!";
+    findPwMsg.classList.remove('content-hidden');
+    return;
+  }
+
+  if (userData && userData.email === email) {
+    currentUser = userData;
+    closeModal('findPwModal');
+    openModal('resetPwModal');
+  } else {
+    findPwMsg.textContent = "등록된 이메일이 없습니다.";
+    findPwMsg.classList.remove('content-hidden');
+  }
+}
+
+function resetPassword() {
+  const newPw = document.getElementById('newPw').value;
+  const confirmPw = document.getElementById('newPwConfirm').value;
+
+  resetMsg.textContent = '';
+
+  if (!newPw || !confirmPw) {
+    resetMsg.textContent = "모든 칸을 입력해주세요!";
+    resetMsg.className = "error-message";
+    return;
+  }
+
+  if (newPw !== confirmPw) {
+    resetMsg.textContent = "비밀번호가 일치하지 않습니다!";
+    resetMsg.className = "error-message";
+    return;
+  }
+
+  let userData = JSON.parse(localStorage.getItem('user'));
+
+  if (userData && currentUser && userData.id === currentUser.id) {
+    userData.pw = newPw;
+    localStorage.setItem('user', JSON.stringify(userData));
+    resetMsg.textContent = "✅ 비밀번호가 성공적으로 변경되었습니다!";
+    resetMsg.className = "success-message";
+
+    setTimeout(() => closeModal('resetPwModal'), 2000);
+  } else {
+    resetMsg.textContent = "사용자 정보를 찾을 수 없습니다.";
+    resetMsg.className = "error-message";
+  }
+}
+</script>
+
+</body>
+
+</html>

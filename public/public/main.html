@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>중고거래 사이트</title>
+
+  <!-- SUIT 폰트 -->
+  <link href="https://fonts.googleapis.com/css2?family=SUIT:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <!-- ✅ 네비게이션 바 -->
+  <nav>
+    <div class="logo">
+      <a href="main.html">Re:Born</a>
+    </div>
+
+    <div class="search-bar">
+      <div class="search-container">
+        <input type="text" id="searchInput" placeholder="상품명, 카테고리 검색..." oninput="showHideClearButton()" />
+        <button class="clear-btn" id="clearBtn" onclick="clearSearchInput()" style="display: none;">&times;</button>
+      </div>
+    </div>
+
+    <ul class="menu">
+      <li id="mypageMenu">
+        <a href="#">마이 페이지</a>
+        <ul class="submenu" style="left: -30px;">
+          <li><a href="my_info.html">내 정보</a></li>
+          <li><a href="goods_reg.html">등록한 상품 목록</a></li>
+          <li><a href="rating.html">후기 / 평점</a></li>
+          <li><a href="javascript:void(0);" onclick="openWithdrawPopup()">탈퇴하기</a></li>
+        </ul>
+      </li>
+
+      <li id="authMenu">
+        <a href="#" id="authLink">로그인/회원가입</a>
+        <ul class="submenu" id="authSubmenu">
+          <li><a href="login.html">로그인</a></li>
+          <li><a href="signup.html">회원가입</a></li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- ✅ 카테고리 + 가격 필터 -->
+  <aside class="category-sidebar">
+    <h3>카테고리</h3>
+    <ul>
+      <li onclick="loadCategory('옷')">옷</li>
+      <li onclick="loadCategory('가전')">가전</li>
+      <li onclick="loadCategory('가구')">가구</li>
+      <li onclick="loadCategory('생활/주방')">생활/주방</li>
+      <li onclick="loadCategory('취미/게임')">취미/게임</li>
+      <li onclick="loadCategory('기타')">기타</li>
+    </ul>
+
+    <div class="price-filter">
+      <h4>가격 필터</h4>
+      <div class="filter-inputs">
+        <input type="number" id="minPrice" placeholder="최소" />
+        <span>~</span>
+        <input type="number" id="maxPrice" placeholder="최대" />
+      </div>
+      <div class="filter-buttons">
+        <button onclick="applyPriceFilter()">적용</button>
+        <button onclick="resetFilter()">초기화</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ✅ 상품 목록 -->
+  <div class="product-container" id="productContainer">
+
+  </div>
+
+  <script>
+    // ✅ 회원 탈퇴 팝업
+    function openWithdrawPopup() {
+      const popupWidth = 500;
+      const popupHeight = 650;
+      const left = (window.screen.width / 2) - (popupWidth / 2);
+      const top = (window.screen.height / 2) - (popupHeight / 2);
+      const options = `width=${popupWidth},height=${popupHeight},left=${left},top=${top},status=no,menubar=no,toolbar=no,resizable=no`;
+      window.open("withdraw.html", "withdrawPopup", options);
+    }
+
+    // ✅ 검색창 X 버튼
+    function clearSearchInput() {
+      const searchInput = document.getElementById('searchInput');
+      searchInput.value = '';
+      showHideClearButton();
+      searchInput.focus();
+    }
+
+    function showHideClearButton() {
+      const searchInput = document.getElementById('searchInput');
+      const clearBtn = document.getElementById('clearBtn');
+      clearBtn.style.display = searchInput.value ? 'block' : 'none';
+    }
+
+    // ✅ 가격 필터 기능
+    function applyPriceFilter() {
+      const min = parseInt(document.getElementById('minPrice').value) || 0;
+      const max = parseInt(document.getElementById('maxPrice').value) || Infinity;
+      const products = document.querySelectorAll('.product-item');
+
+      products.forEach(item => {
+        const price = parseInt(item.dataset.price);
+        if (price >= min && price <= max) {
+          item.style.display = 'block';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    }
+
+    // ✅ 초기화 버튼
+    function resetFilter() {
+      document.getElementById('minPrice').value = '';
+      document.getElementById('maxPrice').value = '';
+      document.querySelectorAll('.product-item').forEach(item => {
+        item.style.display = 'block';
+      });
+
+    }
+    const productContainer = document.getElementById("productContainer");
+
+    // 메인 페이지 로딩 시 DB 상품 가져오기
+    async function loadProducts() {
+      try {
+        const res = await fetch("/product/list");
+        const products = await res.json();
+
+        productContainer.innerHTML = ""; // 기존 내용 초기화
+
+        products.forEach(p => {
+          const item = document.createElement("div");
+          item.classList.add("product-item");
+          item.dataset.price = p.price;
+
+          item.innerHTML = `
+          <a href="product_detail.html?id=${p.product_id}">
+            <img src="${p.image_url || 'https://via.placeholder.com/200'}" alt="${p.title}">
+            <div class="name">${p.title}</div>
+            <div class="price">${p.price.toLocaleString()}원</div>
+          </a>
+        `;
+
+          productContainer.appendChild(item);
+        });
+      } catch (err) {
+        console.error("상품 불러오기 실패:", err);
+      }
+    }
+    async function loadCategory(category) {
+      try {
+        const res = await fetch(`/product/category/${encodeURIComponent(category)}`);
+        const products = await res.json();
+
+        productContainer.innerHTML = ""; // 기존 내용 초기화
+
+        products.forEach(p => {
+          const item = document.createElement("div");
+          item.classList.add("product-item");
+          item.dataset.price = p.price;
+
+          item.innerHTML = `
+        <a href="product_detail.html?id=${p.product_id}">
+          <img src="${p.image_url || 'https://via.placeholder.com/200'}" alt="${p.title}">
+          <div class="name">${p.title}</div>
+          <div class="price">${p.price.toLocaleString()}원</div>
+        </a>
+      `;
+          productContainer.appendChild(item);
+        });
+      } catch (err) {
+        console.error("카테고리별 상품 불러오기 실패:", err);
+      }
+    }
+    loadProducts();
+  </script>
+</body>
+
+</html>

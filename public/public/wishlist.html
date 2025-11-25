@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>찜 목록 - 중고마켓</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <nav>
+    <div class="logo">
+      <a href="main.html">Re:Born</a>
+    </div>
+
+    <div class="search-bar">
+      <div class="search-container">
+        <input type="text" id="searchInput" placeholder="상품명, 카테고리 검색..." oninput="showHideClearButton()" />
+        <button class="clear-btn" id="clearBtn" onclick="clearSearchInput()" style="display: none;">&times;</button>
+      </div>
+    </div>
+
+    <ul class="menu">
+      <li>
+        <a href="#">마이 페이지</a>
+        <ul class="submenu" style="left: -30px;">
+          <li><a href="my_info.html">내 정보</a></li>
+          <li><a href="goods_reg.html">등록한 상품 목록</a></li>
+          <li><a href="rating.html">후기 / 평점</a></li>
+          <li><a href="javascript:void(0);" onclick="openWithdrawPopup()">탈퇴하기</a></li>
+      </li>
+    </ul>
+    </li>
+
+
+    <li>
+      <a href="#">로그인/회원가입</a>
+      <ul class="submenu">
+        <li><a href="login.html">로그인</a></li>
+        <li><a href="signup.html">회원가입</a></li>
+      </ul>
+    </li>
+    </ul>
+  </nav>
+
+  <main class="container">
+    <section id="wishlist" class="page-section">
+      <h2>찜 목록 (Wishlist)</h2>
+      <ul class="item-list">
+        <li class="item-list-item">
+          <img src="https://via.placeholder.com/80x80.png?text=Wish" alt="찜한 상품">
+          <div class="item-info">
+            <h4><a href="#">(상품 상세) 빈티지 야구 점퍼</a></h4>
+            <p class="price">35,000원</p>
+            <p class="seller">판매자: vintageLover</p>
+          </div>
+          <button class="btn btn-danger" style="margin-left: 20px;">찜 삭제</button>
+        </li>
+        <li class="item-list-item">
+          <img src="https://via.placeholder.com/80x80.png?text=Wish" alt="찜한 상품">
+          <div class="item-info">
+            <h4><a href="#">(상품 상세) 아이패드 에어 4세대</a></h4>
+            <p class="price">450,000원</p>
+            <p class="seller">판매자: ITMaster</p>
+          </div>
+          <button class="btn btn-danger" style="margin-left: 20px;">찜 삭제</button>
+        </li>
+      </ul>
+    </section>
+  </main>
+</body>
+<script>
+  function openWithdrawPopup() {
+    const popupWidth = 500;
+    const popupHeight = 650;
+    const left = (window.screen.width / 2) - (popupWidth / 2);
+    const top = (window.screen.height / 2) - (popupHeight / 2);
+    const options = `width=${popupWidth},height=${popupHeight},left=${left},top=${top},status=no,menubar=no,toolbar=no,resizable=no`;
+    window.open("withdraw.html", "withdrawPopup", options);
+  }
+  function clearSearchInput() {
+    const searchInput = document.getElementById('searchInput');
+    searchInput.value = '';
+    showHideClearButton();
+    searchInput.focus();
+  }
+
+  function showHideClearButton() {
+    const searchInput = document.getElementById('searchInput');
+    const clearBtn = document.getElementById('clearBtn');
+
+    if (searchInput.value.length > 0) {
+      clearBtn.style.display = 'block';
+    } else {
+      clearBtn.style.display = 'none';
+    }
+  }
+  async function loadWishlist() {
+    try {
+      const res = await fetch("/wishlist", { credentials: "include" });
+      const items = await res.json();
+      const ul = document.querySelector(".item-list");
+      ul.innerHTML = "";
+      items.forEach(item => {
+        const li = document.createElement("li");
+        li.className = "item-list-item";
+        li.innerHTML = `
+        <img src="${item.image_url || 'https://via.placeholder.com/80'}" alt="찜한 상품">
+        <div class="item-info">
+          <h4><a href="#">${item.title}</a></h4>
+          <p class="price">${item.price.toLocaleString()}원</p>
+          <p class="seller">판매자: ${item.seller_name}</p>
+        </div>
+        <button class="btn btn-danger" style="margin-left: 20px;">찜 삭제</button>
+      `;
+        li.querySelector("button").addEventListener("click", async () => {
+          await fetch(`/wishlist/${item.wishlist_id}`, { method: "DELETE", credentials: "include" });
+          li.remove();
+        });
+        ul.appendChild(li);
+      });
+    } catch (err) {
+      alert("찜 목록 불러오기 실패: 로그인 필요");
+    }
+  }
+
+  loadWishlist();
+</script>
+
+</html>

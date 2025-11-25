@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>내 평점 - 중고마켓</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <nav>
+    <div class="logo">
+      <a href="main.html">Re:Born</a>
+    </div>
+
+    <div class="search-bar">
+      <div class="search-container">
+        <input type="text" id="searchInput" placeholder="상품명, 카테고리 검색..." oninput="showHideClearButton()" />
+        <button class="clear-btn" id="clearBtn" onclick="clearSearchInput()" style="display: none;">&times;</button>
+      </div>
+    </div>
+
+    <ul class="menu">
+        <li>
+            <a href="#">마이 페이지</a>
+            <ul class="submenu" style="left: -30px;">
+            <li><a href="my_info.html">내 정보</a></li>
+            <li><a href="goods_reg.html">등록한 상품 목록</a></li>
+            <li><a href="rating.html">후기 / 평점</a></li>
+            <li><a href="javascript:void(0);" onclick = "openWithdrawPopup()">탈퇴하기</a></li>
+            </li>
+            </ul>
+        </li>
+
+
+        <li>
+            <a href="#">로그인/회원가입</a>
+            <ul class="submenu">
+            <li><a href="login.html">로그인</a></li>
+            <li><a href="signup.html">회원가입</a></li>
+            </ul>
+        </li>
+    </ul>
+  </nav>
+  <main class="container">
+    <section id="ratings" class="page-section">
+      <h2>내 평점 (매너 온도)</h2>
+      <div class="rating-summary">
+        <h3>전체 평점 4.7 / 5.0</h3>
+        <div class="rating-visual">★★★★☆</div>
+        <p>(총 15개의 평가 기준)</p>
+      </div>
+
+      <h2>내가 받은 후기</h2>
+      <ul class="item-list">
+        <li class="item-list-item">
+          <img src="https://via.placeholder.com/80x80.png?text=Item" alt="후기 상품">
+          <div class="item-info">
+            <h4><a href="#">(판매 완료) 게이밍 마우스</a></h4>
+            <p class="rating">★★★★★</p>
+            <p class="review-content">"답변도 빠르시고 엄청 친절하세요! 물건 상태도 S급입니다!"</p>
+            <p class="seller">구매자: aple123</p>
+          </div>
+        </li>
+        <li class="item-list-item">
+          <img src="https://via.placeholder.com/80x80.png?text=Item" alt="후기 상품">
+          <div class="item-info">
+            <h4><a href="#">(판매 완료) 전공 서적</a></h4>
+            <p class="rating">★★★★☆</p>
+            <p class="review-content">"책 모서리가 조금 닳았지만 싸게 잘 샀습니다."</p>
+            <p class="seller">구매자: student01</p>
+          </div>
+        </li>
+      </ul>
+    </section>
+  </main>
+  <script>
+    function openWithdrawPopup() {
+      const popupWidth = 500;
+      const popupHeight = 650;
+      const left = (window.screen.width / 2) - (popupWidth / 2);
+      const top = (window.screen.height / 2) - (popupHeight / 2);
+      const options = `width=${popupWidth},height=${popupHeight},left=${left},top=${top},status=no,menubar=no,toolbar=no,resizable=no`;
+      window.open("withdraw.html", "withdrawPopup", options);
+    }
+    function clearSearchInput() {
+      const searchInput = document.getElementById('searchInput');
+      searchInput.value = '';
+      showHideClearButton();
+      searchInput.focus();
+    }
+
+    function showHideClearButton() {
+      const searchInput = document.getElementById('searchInput');
+      const clearBtn = document.getElementById('clearBtn');
+
+      if (searchInput.value.length > 0) {
+        clearBtn.style.display = 'block';
+      } else {
+        clearBtn.style.display = 'none';
+      }
+    }
+  </script>
+</body>
+</html>

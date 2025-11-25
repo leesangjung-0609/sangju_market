@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>판매자 상점 - 중고마켓</title>
+        <link rel="stylesheet" href="style.css" />
+        <style>
+.profile-container {
+  display: flex; /* 👈 핵심: 자식 요소를 가로로 배치 */
+  align-items: center; /* 👈 세로 중앙 정렬 */
+  gap: 24px; /* 👈 이미지와 정보 사이의 간격 */
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  border: 1px solid #eee;
+}
+
+.profile-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%; /* 👈 원형 프로필 사진 */
+  object-fit: cover;
+  flex-shrink: 0; /* 👈 화면이 줄어도 찌그러지지 않게 함 */
+}
+
+/* 'info-display'가 남은 공간을 채우도록 함 */
+.profile-container .info-display {
+  flex-grow: 1;
+}
+        </style>
+    </head>
+<body>
+  <nav>
+    <div class="logo">
+      <a href="main.html">Re:Born</a>
+    </div>
+    <div class="search-bar">
+      <div class="search-container">
+        <input type="text" id="searchInput" placeholder="상품명, 카테고리 검색..." oninput="showHideClearButton()" />
+        <button class="clear-btn" id="clearBtn" onclick="clearSearchInput()" style="display: none;">&times;</button>
+      </div>
+    </div>
+    <ul class="menu">
+      <li>
+        <a href="#">마이 페이지</a>
+        <ul class="submenu" style="left: -30px;">
+          <li><a href="my_info.html">내 정보</a></li>
+          <li><a href="goods_reg.html">등록한 상품 목록</a></li>
+          <li><a href="rating.html">후기 / 평점</a></li>
+          <li><a href="javascript:void(0);" onclick="openWithdrawPopup()">탈퇴하기</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="#">로그인/회원가입</a>
+        <ul class="submenu">
+          <li><a href="login.html">로그인</a></li>
+          <li><a href="signup.html">회원가입</a></li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+
+  <main class="container">
+    
+    <section id="user-info" class="page-section">
+      <h2>판매자 정보</h2>
+      
+      <div class="profile-container">
+        
+        <img src="https://via.placeholder.com/100" alt="판매자 프로필" class="profile-avatar">
+        
+        <div class="info-display">
+          <div class="info-row">
+            <span class="info-label">닉네임</span>
+            <span class="info-value">친절한 판매자 A</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">평점</span>
+            <span class="info-value">★ 4.7 / 5.0 (후기 15개)</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">총 판매</span>
+            <span class="info-value">52회</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="history-section">
+      <h3>상점 후기</h3>
+      <ul class="item-list" id="review-list">
+        <li class="item-list-item">
+          <img src="https://via.placeholder.com/60" alt="구매자 프로필">
+          <div class="item-info">
+            <p class="rating">★★★★★</p>
+            <p class="review-content">"답변도 빠르시고 엄청 친절하세요! 물건 상태도 S급입니다!"</p>
+            <p class="seller">구매자: aple123</p>
+          </div>
+        </li>
+         <li class="item-list-item">
+          <img src="https://via.placeholder.com/60" alt="구매자 프로필">
+          <div class="item-info">
+            <p class="rating">★★★★☆</p>
+            <p class="review-content">"책 모서리가 조금 닳았지만 싸게 잘 샀습니다."</p>
+            <p class="seller">구매자: student01</p>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <section class="history-section">
+      <h3>판매중인 상품</h3>
+      <div class="card-grid" id="selling-list">
+        <div class="product-card">
+          <a href="product_detail.html?id=1">
+            <img src="https://via.placeholder.com/220x180" alt="상품1">
+            <div class="card-content">
+              <h4>거의 새것! 게이밍 마우스</h4>
+              <p class="price">35,000원</p>
+              <p class="date">등록일: 2025-11-01</p>
+            </div>
+          </a>
+        </div>
+        <div class="product-card">
+          <a href="product_detail.html?id=2">
+            <img src="https://via.placeholder.com/220x180" alt="상품2">
+            <div class="card-content">
+              <h4>제목이 아주 긴 상품입니다...</h4>
+              <p class="price">12,000원</p>
+              <p class="date">등록일: 2025-10-28</p>
+            </div>
+          </a>
+        </div>
+      </div>
+      </section>
+
+          <!-- ✅ 판매 내역 -->
+    <section class="history-section">
+      <h3>판매 내역</h3>
+      <div class="card-grid" id="sales-list">
+        <div class="product-card">
+          <a href="product_detail.html?id=1">
+            <img src="activity.jpg" alt="상품1">
+            <div class="card-content">
+              <h4>상품1</h4>
+              <p class="price">10,000원</p>
+              <p class="date">판매일: 2025-10-05</p>
+            </div>
+          </a>
+        </div>
+
+        <div class="product-card">
+          <a href="product_detail.html?id=2">
+            <img src="healing.jpg" alt="상품2">
+            <div class="card-content">
+              <h4>상품2</h4>
+              <p class="price">12,000원</p>
+              <p class="date">판매일: 2025-09-28</p>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ✅ 구매 내역 -->
+    <section class="history-section">
+      <h3>구매 내역</h3>
+      <div class="card-grid" id="purchase-list">
+        <div class="product-card">
+          <a href="product_detail.html?id=3">
+            <img src="https://via.placeholder.com/220" alt="상품3">
+            <div class="card-content">
+              <h4>상품3</h4>
+              <p class="price">8,000원</p>
+              <p class="date">구매일: 2025-10-12</p>
+            </div>
+          </a>
+        </div>
+
+        <div class="product-card">
+          <a href="product_detail.html?id=4">
+            <img src="https://via.placeholder.com/220" alt="상품4">
+            <div class="card-content">
+              <h4>상품4</h4>
+              <p class="price">15,000원</p>
+              <p class="date">구매일: 2025-09-10</p>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    function openWithdrawPopup() {
+      const popupWidth = 500;
+      const popupHeight = 650;
+      const left = (window.screen.width / 2) - (popupWidth / 2);
+      const top = (window.screen.height / 2) - (popupHeight / 2);
+      const options = `width=${popupWidth},height=${popupHeight},left=${left},top=${top},status=no,menubar=no,toolbar=no,resizable=no`;
+      window.open("withdraw.html", "withdrawPopup", options);
+    }
+    function clearSearchInput() {
+      const searchInput = document.getElementById('searchInput');
+      searchInput.value = '';
+      showHideClearButton();
+      searchInput.focus();
+    }
+
+    function showHideClearButton() {
+      const searchInput = document.getElementById('searchInput');
+      const clearBtn = document.getElementById('clearBtn');
+
+      if (searchInput.value.length > 0) {
+        clearBtn.style.display = 'block';
+      } else {
+        clearBtn.style.display = 'none';
+      }
+    }
+  </script>
+</body>
+</html>

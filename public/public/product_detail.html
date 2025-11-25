@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>상품 상세 - 중고마켓</title>
+  <link rel="stylesheet" href="style.css" />
+
+  <style>
+    body { margin-top: 80px; }
+    .detail-container { width: 80%; margin: 50px auto; display: flex; gap: 40px; align-items: flex-start; justify-content: center; }
+    .detail-container img { width: 350px; height: 350px; object-fit: cover; border-radius: 10px; border: 1px solid #ddd; }
+    .detail-info { flex: 1; max-width: 500px; }
+    .detail-info h2 { margin-bottom: 15px; font-size: 24px; }
+    .detail-info .price { font-size: 20px; font-weight: bold; color: #c0392b; margin-bottom: 20px; }
+    .detail-info .description { line-height: 1.6; white-space: pre-line; }
+  </style>
+</head>
+
+<body>
+
+<nav>
+  <div class="logo"><a href="main.html">Re:Born</a></div>
+  <div class="search-bar">
+    <div class="search-container">
+      <input type="text" id="searchInput" placeholder="상품명, 카테고리 검색..." oninput="showHideClearButton()" />
+      <button class="clear-btn" id="clearBtn" onclick="clearSearchInput()" style="display: none;">&times;</button>
+    </div>
+  </div>
+
+  <ul class="menu">
+    <li id="mypageMenu">
+      <a href="#">마이 페이지</a>
+      <ul class="submenu" style="left:-30px;">
+        <li><a href="my_info.html">내 정보</a></li>
+        <li><a href="goods_reg.html">등록한 상품 목록</a></li>
+        <li><a href="rating.html">후기 / 평점</a></li>
+        <li><a href="javascript:void(0);" onclick="openWithdrawPopup()">탈퇴하기</a></li>
+      </ul>
+    </li>
+    <li>
+      <a id="authLink" href="#">로그인/회원가입</a>
+      <ul class="submenu" id="authSubmenu">
+        <li><a href="login.html">로그인</a></li>
+        <li><a href="signup.html">회원가입</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+<div class="detail-container">
+  <img id="productImage" src="https://via.placeholder.com/350" alt="상품 이미지">
+  <div class="detail-info">
+    <h2 id="productTitle">상품명 예시</h2>
+    <div class="price" id="productPrice">10,000원</div>
+    <div class="description" id="productDesc">
+      상품 설명 예시입니다.
+      상품 상태는 양호하며, 사용감은 거의 없습니다.
+      직거래/택배 가능.
+    </div>
+    <div class="seller-name" id="sellerName" style="margin-top:18px; font-size:15px; color:#555; cursor:pointer;">
+      판매자: <strong>db의신</strong>
+    </div>
+    <div style="margin-top: 20px; display: flex; gap: 12px;">
+      <button id="buyBtn" style="padding:12px 25px; background:#2c7be5; color:white; border:none; border-radius:6px; font-size:16px; cursor:pointer;">
+        구매하기
+      </button>
+      <button id="likeBtn" style="padding:12px 20px; background:#e74c3c; color:white; border:none; border-radius:6px; font-size:16px; cursor:pointer;">
+        ♥ 좋아요
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+function openWithdrawPopup() {
+  const popupWidth = 500;
+  const popupHeight = 650;
+  const left = (window.screen.width / 2) - (popupWidth / 2);
+  const top = (window.screen.height / 2) - (popupHeight / 2);
+  const options = `width=${popupWidth},height=${popupHeight},left=${left},top=${top},status=no,menubar=no,toolbar=no,resizable=no`;
+  window.open("withdraw.html", "withdrawPopup", options);
+}
+
+function clearSearchInput() {
+  const searchInput = document.getElementById('searchInput');
+  searchInput.value = '';
+  showHideClearButton();
+  searchInput.focus();
+}
+
+function showHideClearButton() {
+  const searchInput = document.getElementById('searchInput');
+  const clearBtn = document.getElementById('clearBtn');
+  clearBtn.style.display = searchInput.value.length > 0 ? 'block' : 'none';
+}
+
+// 🔹 상품 상세 불러오기
+async function loadProduct() {
+  const params = new URLSearchParams(window.location.search);
+  const productId = params.get("id");
+  if (!productId) { alert("상품 ID 없음"); return; }
+
+  try {
+    const res = await fetch(`/product/${productId}`, { credentials: "include" });
+    if (!res.ok) throw new Error("상품 불러오기 실패");
+
+    const product = await res.json();
+
+    document.getElementById("productImage").src = product.image_url;
+    document.getElementById("productTitle").textContent = product.title;
+    document.getElementById("productPrice").textContent = product.price.toLocaleString() + "원";
+    document.getElementById("productDesc").textContent = product.description || "";
+    document.getElementById("sellerName").innerHTML = `판매자: <strong>${product.username}</strong>`;
+
+    // 찜 버튼 클릭
+    document.getElementById("likeBtn").addEventListener("click", async function () {
+      try {
+        const res = await fetch("/wishlist/add", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ productId: product.product_id }),
+          credentials: "include"
+        });
+        const result = await res.json();
+        alert(result.message);
+      } catch (err) {
+        alert("찜 추가 실패: 로그인 필요");
+      }
+    });
+
+  } catch (err) {
+    console.error(err);
+    alert("상품 정보를 불러오지 못했습니다.");
+  }
+}
+
+// 구매 버튼
+document.getElementById("buyBtn").addEventListener("click", () => {
+  alert("구매 요청이 완료되었습니다! 판매자와 채팅을 시작합니다.");
+});
+
+document.getElementById("sellerName").addEventListener("click", () => {
+  window.location.href = 'seller.html';
+});
+
+// 페이지 로드 시 상품 불러오기
+loadProduct();
+</script>
+
+</body>
+</html>

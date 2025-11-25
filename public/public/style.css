@@ -1,0 +1,838 @@
+/* ------------------------------
+       1. 기본 설정 (공통/기본 스타일)
+    ------------------------------ */
+body {
+  margin: 0;
+  font-family: 'SUIT', sans-serif;
+  background-color: #f8f9fa;
+  color: #333;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* 메뉴 아래 불필요한 여백 제거 */
+body::before {
+  content: none;
+}
+
+/* ------------------------------
+       2. 네비게이션 바
+    ------------------------------ */
+nav {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  z-index: 1000;
+  box-sizing: border-box;
+}
+
+/* 로고 왼쪽 고정 */
+.logo {
+  flex: 0 0 auto;
+}
+
+.logo a {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2b6cb0;
+}
+
+/* ------------------------------
+       3. 검색창
+    ------------------------------ */
+/* 검색창 가운데 */
+
+.search-bar {
+  flex: 0 1 500px;
+  display: flex;
+  justify-content: center;
+  min-width: 150px;
+}
+
+/* 검색창 + X버튼 감싸는 컨테이너 */
+.search-container {
+  position: relative;
+  width: 500px;
+}
+
+.search-bar input {
+  width: 100%;
+  /* X 버튼 공간 확보 (30px -> 35px로 최종 통일) */
+  padding: 8px 35px 8px 14px;
+  border: none;
+  border-radius: 20px;
+  background-color: #a8d0ff;
+  color: white;
+  font-weight: 500;
+  transition: 0.2s;
+  box-sizing: border-box;
+}
+
+.search-bar input::placeholder {
+  color: white;
+}
+
+.search-bar input:focus {
+  outline: none;
+  background-color: #90c4ff;
+  box-shadow: 0 0 6px rgba(43, 108, 176, 0.4);
+}
+
+/* X 버튼 */
+.clear-btn {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: white;
+  font-size: 20px;
+  /* 최종 20px로 통일 */
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.clear-btn:hover {
+  color: #f0f0f0;
+}
+
+
+/* ------------------------------
+       4. 메뉴 (로그인/회원, 마이페이지)
+    ------------------------------ */
+/* 메뉴 오른쪽 */
+.menu {
+  list-style: none;
+  flex: 0 0 auto;
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin: 0;
+  /* 추가 마진 제거 */
+  padding: 0;
+  /* 추가 패딩 제거 */
+  align-items: center;
+}
+
+.menu>li {
+  position: relative;
+  cursor: pointer;
+}
+
+.menu>li>a {
+  font-weight: 500;
+  color: #333;
+  transition: color 0.3s;
+}
+
+.menu>li:hover>a {
+  color: #2b6cb0;
+}
+
+.submenu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  display: none;
+  list-style: none;
+  padding: 8px 0;
+  min-width: 140px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 2000;
+}
+
+.submenu li {
+  padding: 8px 16px;
+}
+
+.submenu li a {
+  font-size: 0.9rem;
+  color: #333;
+  display: block;
+}
+
+.menu li:hover .submenu {
+  display: block;
+}
+
+/* ------------------------------
+       5. 카테고리 사이드바
+    ------------------------------ */
+.category-sidebar {
+  position: fixed;
+  top: 70px;
+  left: 0;
+  width: 200px;
+  height: calc(100vh - 70px);
+  /* nav bar 높이를 뺀 나머지 영역 채움 */
+  background-color: #e6f3ff;
+  border-right: 1px solid #cfddee;
+  padding: 20px;
+  overflow-y: auto;
+  /* 내용이 길어질 경우 스크롤 */
+  z-index: 900;
+  box-sizing: border-box;
+}
+
+.category-sidebar h3 {
+  margin-top: 0;
+  color: #2b6cb0;
+  font-size: 1.1rem;
+  border-bottom: 2px solid #bcdcff;
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+}
+
+.category-sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.category-sidebar li {
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+  margin-bottom: 4px;
+}
+
+.category-sidebar li:hover {
+  background-color: #cde4ff;
+  color: #2b6cb0;
+  font-weight: 600;
+}
+
+/* ------------------------------
+       6. 상품 목록 (메인 페이지)
+    ------------------------------ */
+.product-container {
+  margin-left: 250px;
+  /* 200px(sidebar) + 50px(여백) */
+  margin-top: 90px;
+  /* nav bar 높이 + 여백 */
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 24px;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.product-item {
+  background-color: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  transition: 0.3s;
+  overflow: hidden;
+}
+
+.product-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  color: #2b6cb0;
+  cursor: pointer;
+}
+
+.product-item img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.name {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-top: 8px;
+  color: #333;
+  padding: 0 5px;
+}
+
+.product-item:hover .name {
+  color: #2b6cb0;
+  /* hover 시 이름 색상 변경 */
+}
+
+.price {
+  font-size: 0.9rem;
+  color: #2b6cb0;
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+
+/* ------------------------------
+       7. 다른 페이지 컨테이너 (.container / .main.container)
+    ------------------------------ */
+.container {
+  max-width: 1200px;
+  margin: 90px auto 60px auto;
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+main.container {
+  /* 이 부분은 다른 페이지에서 사용되는 컨테이너 */
+  max-width: 1000px;
+  margin: 90px auto 40px auto;
+  padding: 30px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.page-section {
+  margin-bottom: 50px;
+}
+
+.page-section h2,
+.container h2 {
+  font-size: 24px;
+  color: #2c3e50;
+  border-bottom: 2px solid #eaeaea;
+  padding-bottom: 10px;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+/* ------------------------------
+       8. 폼 및 버튼 스타일
+    ------------------------------ */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #34495e;
+}
+
+.form-group input[type="text"],
+.form-group input[type="password"] {
+  width: 95%;
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 15px;
+}
+
+.form-group input[readonly] {
+  background-color: #f4f4f4;
+  cursor: not-allowed;
+}
+
+.btn {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.btn-primary {
+  background-color: #2b6cb0;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #22588f;
+}
+
+.btn-danger {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.btn-danger:hover {
+  background-color: #c0392b;
+}
+
+.add-btn {
+  background-color: #2b6cb0;
+  color: white;
+  margin-top: 30px;
+  padding: 12px 20px;
+  display: block;
+  width: 100%;
+  border-radius: 8px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.2s;
+}
+
+.add-btn:hover {
+  background-color: #22588f;
+}
+
+.edit-btn {
+  background-color: #f39c12;
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.2s;
+}
+
+.edit-btn:hover {
+  background-color: #d68910;
+}
+
+.delete-btn {
+  background-color: #e74c3c;
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.2s;
+}
+
+.delete-btn:hover {
+  background-color: #c0392b;
+}
+
+/* ------------------------------
+       9. 내 정보 / 목록 / 후기 등 나머지 스타일
+    ------------------------------ */
+.info-display {
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 10px 20px;
+  background-color: #fafafa;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  padding: 18px 10px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  font-weight: 500;
+  color: #34495e;
+  width: 150px;
+  flex-shrink: 0;
+}
+
+.info-value {
+  font-weight: 400;
+  color: #333;
+}
+
+.button-container {
+  text-align: center;
+  margin-top: 40px;
+}
+
+/* 등록한 상품 목록 그리드 (goods_reg.html) */
+.product-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.product-card {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s, box-shadow 0.3s;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.product-img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  background-color: #eee;
+}
+
+.product-info {
+  padding: 15px;
+  flex-grow: 1;
+}
+
+.product-name {
+  font-size: 17px;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 5px;
+}
+
+.product-desc {
+  color: #555;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.product-price {
+  color: #2b6cb0;
+  font-weight: bold;
+}
+
+.btn-group {
+  display: flex;
+  justify-content: space-around;
+  border-top: 1px solid #eee;
+  padding: 10px;
+  background: #fafafa;
+}
+
+/* 찜 목록 / 후기 목록 스타일 */
+.item-list {
+  list-style: none;
+  padding: 0;
+}
+
+.item-list-item {
+  display: flex;
+  align-items: center;
+  border: 1px solid #eee;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 6px;
+}
+
+.item-list-item img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-right: 20px;
+  background-color: #f0f0f0;
+}
+
+.item-info {
+  flex-grow: 1;
+}
+
+.item-info h4 {
+  margin: 0 0 5px 0;
+}
+
+.item-info h4 a {
+  text-decoration: none;
+  color: #2c3e50;
+  font-size: 17px;
+}
+
+.item-info h4 a:hover {
+  text-decoration: underline;
+}
+
+.item-info .price {
+  font-weight: bold;
+  color: #2b6cb0;
+  font-size: 16px;
+  margin: 0;
+}
+
+.item-info .seller {
+  margin: 5px 0 0 0;
+  color: #7f8c8d;
+  font-size: 14px;
+}
+
+/* 평점 / 후기 내용 스타일 */
+.rating {
+  color: #f39c12;
+  font-size: 18px;
+  margin-bottom: 5px;
+}
+
+.review-content {
+  margin: 5px 0 0 0;
+  color: #333;
+}
+
+/* 평점 요약 */
+.rating-summary {
+  text-align: center;
+  padding: 20px;
+  background-color: #fafafa;
+  border-radius: 8px;
+}
+
+.rating-summary h3 {
+  font-size: 28px;
+  color: #2c3e50;
+  margin: 0 0 10px 0;
+}
+
+.rating-summary .rating-visual {
+  font-size: 30px;
+  color: #f39c12;
+}
+
+.rating-summary p {
+  font-size: 16px;
+  color: #555;
+}
+
+/* 회원 탈퇴 경고 */
+.withdraw-warning {
+  background-color: #fdf2f2;
+  border: 1px solid #e57373;
+  color: #c0392b;
+  padding: 20px;
+  border-radius: 6px;
+  margin-bottom: 25px;
+}
+
+.withdraw-warning h4 {
+  margin: 0 0 10px 0;
+}
+
+
+/* ------------------------------
+       10. 반응형 (모바일)
+    ------------------------------ */
+@media screen and (max-width: 768px) {
+  nav {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px 20px;
+    height: auto;
+  }
+
+  .search-bar {
+    width: 100%;
+    margin: 10px 0;
+    justify-content: flex-start;
+  }
+
+  .search-container {
+    width: 100%;
+    /* 모바일에서 검색창 꽉 채움 */
+  }
+
+  .search-bar input {
+    width: 100%;
+  }
+
+  .menu {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    margin: 0;
+    padding: 0;
+  }
+
+  .category-sidebar {
+    display: none;
+  }
+
+  .product-container {
+    margin-left: 0;
+    margin-top: 150px;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+
+  .container,
+  main.container {
+    margin-top: 150px;
+  }
+}
+/* ------------------------------
+   판매/구매 내역 카드 스타일 (my_info.html 전용)
+------------------------------ */
+.history-section {
+  margin-top: 40px;
+  padding: 20px;
+  border-top: 2px solid #ddd;
+}
+
+.history-section h3 {
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.history-card {
+  background-color: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: 0.3s;
+  text-align: center;
+}
+
+.history-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  color: #2b6cb0;
+}
+
+.history-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.card-content {
+  padding: 10px 14px;
+}
+
+.card-content h4 {
+  font-size: 16px;
+  margin-bottom: 6px;
+  color: #222;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.history-price {
+  color: #0078ff;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.date {
+  font-size: 13px;
+  color: #666;
+}
+
+.history-card a {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.profile-container {
+  display: flex; /* 👈 핵심: 자식 요소를 가로로 배치 */
+  align-items: center; /* 👈 세로 중앙 정렬 */
+  gap: 24px; /* 👈 이미지와 정보 사이의 간격 */
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  border: 1px solid #eee;
+}
+
+.profile-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%; /* 👈 원형 프로필 사진 */
+  object-fit: cover;
+  flex-shrink: 0; /* 👈 화면이 줄어도 찌그러지지 않게 함 */
+}
+
+/* 'info-display'가 남은 공간을 채우도록 함 */
+.profile-container .info-display {
+  flex-grow: 1;
+}
+
+
+/* ------------------------------
+ 🔹 가격 필터 (Compact 버전)
+------------------------------ */
+.price-filter {
+  margin-top: 15px;
+  padding: 10px;
+  background: #f3f7ff;
+  border-radius: 8px;
+  border: 1px solid #cfddee;
+  box-sizing: border-box;
+  width: 90%;
+}
+
+.price-filter h4 {
+  margin: 0 0 8px 0;
+  font-size: 0.95rem;
+  color: #2b6cb0;
+  text-align: center;
+}
+
+.filter-inputs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.filter-inputs input {
+  width: 60px;
+  padding: 4px 6px;
+  border: 1px solid #bcdcff;
+  border-radius: 5px;
+  text-align: center;
+  font-size: 0.85rem;
+}
+
+.filter-inputs span {
+  color: #555;
+  font-weight: 500;
+  font-size: 0.85rem;
+}
+
+.filter-buttons {
+  margin-top: 8px;
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.filter-buttons button {
+  flex: 1;
+  padding: 5px;
+  background-color: #2b6cb0;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.filter-buttons button:last-child {
+  background-color: #777;
+}
+
+.filter-buttons button:hover {
+  opacity: 0.9;
+}
