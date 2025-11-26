@@ -47,26 +47,7 @@
   <main class="container">
     <section id="wishlist" class="page-section">
       <h2>찜 목록 (Wishlist)</h2>
-      <ul class="item-list">
-        <li class="item-list-item">
-          <img src="https://via.placeholder.com/80x80.png?text=Wish" alt="찜한 상품">
-          <div class="item-info">
-            <h4><a href="#">(상품 상세) 빈티지 야구 점퍼</a></h4>
-            <p class="price">35,000원</p>
-            <p class="seller">판매자: vintageLover</p>
-          </div>
-          <button class="btn btn-danger" style="margin-left: 20px;">찜 삭제</button>
-        </li>
-        <li class="item-list-item">
-          <img src="https://via.placeholder.com/80x80.png?text=Wish" alt="찜한 상품">
-          <div class="item-info">
-            <h4><a href="#">(상품 상세) 아이패드 에어 4세대</a></h4>
-            <p class="price">450,000원</p>
-            <p class="seller">판매자: ITMaster</p>
-          </div>
-          <button class="btn btn-danger" style="margin-left: 20px;">찜 삭제</button>
-        </li>
-      </ul>
+      <div class="card-grid" id="wishlist-display"></div>
     </section>
   </main>
 </body>
@@ -97,35 +78,65 @@
     }
   }
   async function loadWishlist() {
-    try {
-      const res = await fetch("/wishlist", { credentials: "include" });
-      const items = await res.json();
-      const ul = document.querySelector(".item-list");
-      ul.innerHTML = "";
-      items.forEach(item => {
-        const li = document.createElement("li");
-        li.className = "item-list-item";
-        li.innerHTML = `
-        <img src="${item.image_url || 'https://via.placeholder.com/80'}" alt="찜한 상품">
-        <div class="item-info">
-          <h4><a href="#">${item.title}</a></h4>
-          <p class="price">${item.price.toLocaleString()}원</p>
-          <p class="seller">판매자: ${item.seller_name}</p>
-        </div>
-        <button class="btn btn-danger" style="margin-left: 20px;">찜 삭제</button>
-      `;
-        li.querySelector("button").addEventListener("click", async () => {
-          await fetch(`/wishlist/${item.wishlist_id}`, { method: "DELETE", credentials: "include" });
-          li.remove();
-        });
-        ul.appendChild(li);
-      });
-    } catch (err) {
-      alert("찜 목록 불러오기 실패: 로그인 필요");
-    }
-  }
+  try {
+    // GET /wishlist/list 라우터 사용
+    const res = await fetch("/wishlist/list", { credentials: "include" }); 
+    if (!res.ok) throw new Error("찜 목록 로드 실패");
 
-  loadWishlist();
+    const items = await res.json();
+    const container = document.getElementById("wishlist-display"); 
+    container.innerHTML = "";
+
+    if (items.length === 0) {
+      container.innerHTML = '<p style="padding: 20px; color: #888;">찜한 상품이 없습니다.</p>';
+      return;
+    }
+
+    items.forEach(item => {
+      const cardDiv = document.createElement("div");
+      cardDiv.className = "product-card wishlist-card";
+
+      cardDiv.innerHTML = `
+        <a href="product_detail.html?id=${item.product_id}">
+          <img src="${item.image_url || 'https://via.placeholder.com/220x180?text=Wish'}" alt="${item.title}" onerror="this.src='https://via.placeholder.com/220x180'">
+          <div class="card-content">
+            <h4>${item.title}</h4>
+            <p class="price">${item.price.toLocaleString()}원</p>
+            <p class="date seller">판매자: ${item.seller_name}</p>
+          </div>
+        </a>
+        <div class="btn-group">
+          <button class="btn btn-danger delete-wish-btn" data-id="${item.wishlist_id}">찜 삭제</button>
+        </div>
+      `;
+
+      cardDiv.querySelector(".delete-wish-btn").addEventListener("click", async (e) => {
+        const wishlistId = e.target.getAttribute('data-id');
+        if (confirm('정말로 찜 목록에서 삭제하시겠습니까?')) {
+          const deleteRes = await fetch(`/wishlist/remove/${wishlistId}`, { 
+            method: "DELETE", 
+            credentials: "include" 
+          });
+          if (deleteRes.ok) {
+            cardDiv.remove();
+          } else {
+            alert("찜 삭제 실패.");
+          }
+        }
+      });
+
+      container.appendChild(cardDiv);
+    });
+
+  } catch (err) {
+    console.error("찜 목록 불러오기 실패:", err);
+    const container = document.getElementById("wishlist-display");
+    if(container) container.innerHTML = '<p style="padding: 20px; color: red;">로그인이 필요하거나 데이터를 불러오는 데 실패했습니다.</p>';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', loadWishlist);
+
 </script>
 
 </html>

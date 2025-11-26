@@ -5,14 +5,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>중고거래 사이트</title>
-
-  <!-- SUIT 폰트 -->
   <link href="https://fonts.googleapis.com/css2?family=SUIT:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-  <!-- ✅ 네비게이션 바 -->
+  <!-- 네비게이션 바 -->
   <nav>
     <div class="logo">
       <a href="main.html">Re:Born</a>
@@ -46,7 +44,7 @@
     </ul>
   </nav>
 
-  <!-- ✅ 카테고리 + 가격 필터 -->
+  <!-- 카테고리 + 가격 필터 -->
   <aside class="category-sidebar">
     <h3>카테고리</h3>
     <ul>
@@ -72,13 +70,20 @@
     </div>
   </aside>
 
-  <!-- ✅ 상품 목록 -->
-  <div class="product-container" id="productContainer">
-
-  </div>
+  <!-- 상품 목록 -->
+  <div class="product-container" id="productContainer"></div>
 
   <script>
-    // ✅ 회원 탈퇴 팝업
+    // ----------------------
+    // 로그인/회원 상태 변수
+    // ----------------------
+    let loggedInUser = null; // 사용자명
+    let isLoggedIn = false;  // 로그인 상태
+    let status = null;       // 회원 상태: 'active', 'withdrawn'
+
+    // ----------------------
+    // 회원 탈퇴 팝업
+    // ----------------------
     function openWithdrawPopup() {
       const popupWidth = 500;
       const popupHeight = 650;
@@ -88,11 +93,14 @@
       window.open("withdraw.html", "withdrawPopup", options);
     }
 
-    // ✅ 검색창 X 버튼
+    // ----------------------
+    // 검색창 X 버튼
+    // ----------------------
     function clearSearchInput() {
       const searchInput = document.getElementById('searchInput');
       searchInput.value = '';
       showHideClearButton();
+      applyFilters();
       searchInput.focus();
     }
 
@@ -102,87 +110,198 @@
       clearBtn.style.display = searchInput.value ? 'block' : 'none';
     }
 
-    // ✅ 가격 필터 기능
-    function applyPriceFilter() {
+    // ----------------------
+    // 필터: 카테고리 + 검색 + 가격
+    // ----------------------
+    let currentCategory = null;
+
+    function applyFilters() {
       const min = parseInt(document.getElementById('minPrice').value) || 0;
       const max = parseInt(document.getElementById('maxPrice').value) || Infinity;
+      const query = document.getElementById('searchInput').value.toLowerCase();
       const products = document.querySelectorAll('.product-item');
 
       products.forEach(item => {
         const price = parseInt(item.dataset.price);
-        if (price >= min && price <= max) {
-          item.style.display = 'block';
-        } else {
-          item.style.display = 'none';
-        }
+        const name = item.querySelector('.name').textContent.toLowerCase();
+        const category = item.dataset.category.toLowerCase();
+
+        const priceMatch = price >= min && price <= max;
+        const searchMatch = name.includes(query) || category.includes(query);
+        const categoryMatch = currentCategory ? (category === currentCategory.toLowerCase()) : true;
+
+        item.style.display = (priceMatch && searchMatch && categoryMatch) ? 'block' : 'none';
       });
     }
 
-    // ✅ 초기화 버튼
+    document.getElementById('searchInput').addEventListener('input', () => {
+      showHideClearButton();
+      applyFilters();
+    });
+
+    function applyPriceFilter() { applyFilters(); }
     function resetFilter() {
       document.getElementById('minPrice').value = '';
       document.getElementById('maxPrice').value = '';
-      document.querySelectorAll('.product-item').forEach(item => {
-        item.style.display = 'block';
-      });
-
+      applyFilters();
     }
-    const productContainer = document.getElementById("productContainer");
 
-    // 메인 페이지 로딩 시 DB 상품 가져오기
-    async function loadProducts() {
+    // ----------------------
+    // 카테고리 로드
+    // ----------------------
+    async function loadCategory(category) {
+      if (currentCategory === category) {
+        currentCategory = null;
+        updateCategoryActive(null);
+      } else {
+        currentCategory = category;
+        updateCategoryActive(category);
+      }
+
       try {
-        const res = await fetch("/product/list");
+        const res = currentCategory
+          ? await fetch(`/product/category/${encodeURIComponent(currentCategory)}`)
+          : await fetch("/product/list");
         const products = await res.json();
+        renderProducts(products);
+        applyFilters();
+      } catch (err) {
+        console.error("상품 불러오기 실패:", err);
+      }
+    }
 
-        productContainer.innerHTML = ""; // 기존 내용 초기화
+    function updateCategoryActive(activeCategory) {
+      const categories = document.querySelectorAll('.category-sidebar ul li');
+      categories.forEach(li => {
+        li.classList.toggle('active', li.textContent.trim() === activeCategory);
+      });
+    }
 
-        products.forEach(p => {
-          const item = document.createElement("div");
-          item.classList.add("product-item");
-          item.dataset.price = p.price;
+    function renderProducts(products) {
+      const productContainer = document.getElementById("productContainer");
+      productContainer.innerHTML = "";
+      if (products.length === 0) {
+        productContainer.innerHTML = "<p>상품이 없습니다.</p>";
+        return;
+      }
 
-          item.innerHTML = `
+      products.forEach(p => {
+        const item = document.createElement("div");
+        item.classList.add("product-item");
+        item.dataset.price = p.price;
+        item.dataset.category = p.category || '';
+
+        item.innerHTML = `
           <a href="product_detail.html?id=${p.product_id}">
             <img src="${p.image_url || 'https://via.placeholder.com/200'}" alt="${p.title}">
             <div class="name">${p.title}</div>
             <div class="price">${p.price.toLocaleString()}원</div>
           </a>
         `;
+        productContainer.appendChild(item);
+      });
+    }
 
-          productContainer.appendChild(item);
-        });
+    async function loadProducts() {
+      try {
+        currentCategory = null;
+        updateCategoryActive(null);
+        const res = await fetch("/product/list");
+        const products = await res.json();
+        renderProducts(products);
+        applyFilters();
       } catch (err) {
         console.error("상품 불러오기 실패:", err);
       }
     }
-    async function loadCategory(category) {
+
+    loadProducts();
+
+    // ----------------------
+    // 로그인 상태 처리
+    // ----------------------
+    async function checkLoginStatus() {
       try {
-        const res = await fetch(`/product/category/${encodeURIComponent(category)}`);
-        const products = await res.json();
+        const res = await fetch("/user/status", { credentials: 'include' });
+        const data = await res.json();
 
-        productContainer.innerHTML = ""; // 기존 내용 초기화
+        status = data.status; // 'active' or 'withdrawn'
+        if (status === 'active') {
+          loggedInUser = data.username;
+          isLoggedIn = true;
+        } else {
+          loggedInUser = null;
+          isLoggedIn = false;
+        }
 
-        products.forEach(p => {
-          const item = document.createElement("div");
-          item.classList.add("product-item");
-          item.dataset.price = p.price;
-
-          item.innerHTML = `
-        <a href="product_detail.html?id=${p.product_id}">
-          <img src="${p.image_url || 'https://via.placeholder.com/200'}" alt="${p.title}">
-          <div class="name">${p.title}</div>
-          <div class="price">${p.price.toLocaleString()}원</div>
-        </a>
-      `;
-          productContainer.appendChild(item);
-        });
+        updateAuthMenu();
       } catch (err) {
-        console.error("카테고리별 상품 불러오기 실패:", err);
+        console.error("로그인 상태 확인 실패:", err);
       }
     }
-    loadProducts();
+
+    function updateAuthMenu() {
+      const authLink = document.getElementById('authLink');
+      const authSubmenu = document.getElementById('authSubmenu');
+
+      if (isLoggedIn) {
+        authLink.textContent = `${loggedInUser}님`;
+        authSubmenu.innerHTML = `<li><a href="javascript:void(0);" onclick="logout()">로그아웃</a></li>`;
+      } else {
+        authLink.textContent = '로그인/회원가입';
+        authSubmenu.innerHTML = `
+          <li><a href="login.html">로그인</a></li>
+          <li><a href="signup.html">회원가입</a></li>
+        `;
+      }
+    }
+
+    async function login(username, password) {
+      try {
+        const res = await fetch("/user/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: 'include',
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await res.json();
+        status = data.status;
+
+        if (status === 'active') {
+          loggedInUser = data.username;
+          isLoggedIn = true;
+          updateAuthMenu();
+        } else if (status === 'withdrawn') {
+          loggedInUser = null;
+          isLoggedIn = false;
+          alert("탈퇴한 계정입니다.");
+          updateAuthMenu();
+        } else {
+          loggedInUser = null;
+          isLoggedIn = false;
+          alert("로그인 실패");
+          updateAuthMenu();
+        }
+      } catch (err) {
+        console.error("로그인 실패:", err);
+      }
+    }
+
+    async function logout() {
+      try {
+        await fetch("/user/logout", { method: "POST", credentials: 'include' });
+        loggedInUser = null;
+        isLoggedIn = false;
+        updateAuthMenu();
+      } catch (err) {
+        console.error("로그아웃 실패:", err);
+      }
+    }
+
+    // 페이지 로드시 로그인 상태 확인
+    checkLoginStatus();
+
   </script>
 </body>
-
 </html>

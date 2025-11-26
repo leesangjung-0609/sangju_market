@@ -52,6 +52,10 @@
   </div>
 
   <script>
+    // =========================================
+    // 1. UI 및 팝업 관련 함수
+    // =========================================
+
     function openWithdrawPopup() {
       const popupWidth = 500;
       const popupHeight = 650;
@@ -60,60 +64,7 @@
       const options = `width=${popupWidth},height=${popupHeight},left=${left},top=${top},status=no,menubar=no,toolbar=no,resizable=no`;
       window.open("withdraw.html", "withdrawPopup", options);
     }
-    // 상품 목록 초기 데이터 (임시)
-    let products = [
-      { id: 1, name: "나이키 신발", desc: "거의 새 상품이에요.", price: 45000, img: "https://via.placeholder.com/300x180?text=나이키+신발", status: "판매중" },
-      { id: 2, name: "아이폰 13 미니", desc: "생활기스 조금 있음.", price: 620000, img: "https://via.placeholder.com/300x180?text=아이폰+13+미니", status: "예약중" },
-      { id: 3, name: "책상", desc: "튼튼하고 깨끗함.", price: 30000, img: "https://via.placeholder.com/300x180?text=책상", status: "판매 완료" },
-    ];
 
-    // Changed - form 페이지에서 localStorage로 전달된 상품 추가
-    window.addEventListener("load", () => {
-      const newItem = JSON.parse(localStorage.getItem("newProduct"));
-      if (newItem) {
-        products.push(newItem);
-        localStorage.removeItem("newProduct");
-      }
-      renderProducts();
-    });
-
-    function renderProducts() {
-      const list = document.getElementById("productList");
-      list.innerHTML = "";
-
-      products.forEach(p => {
-        const card = document.createElement("div");
-        card.className = "product-card";
-        card.innerHTML = `
-          <img src="${p.img}" alt="${p.name}" class="product-img" />
-          <div class="product-info">
-            <div class="product-name">${p.name}</div>
-            <div class="product-status">${p.status}</div>
-            <div class="product-desc">${p.desc}</div>
-            <div class="product-price">${p.price.toLocaleString()}원</div>
-          </div>
-        `;
-        list.appendChild(card);
-      });
-    }
-
-    
-    function openAddPopup() {
-      const popupWidth = 600;
-      const popupHeight = 700;
-      const left = (window.screen.width / 2) - (popupWidth / 2);
-      const top = (window.screen.height / 2) - (popupHeight / 2);
-      const options = `width=${popupWidth},height=${popupHeight},left=${left},top=${top},status=no,menubar=no,toolbar=no,resizable=no`;
-      window.open("goods_reg_form.html", "addProductPopup", options);
-    }
-    function openWithdrawPopup() {
-      const popupWidth = 500;
-      const popupHeight = 650;
-      const left = (window.screen.width / 2) - (popupWidth / 2);
-      const top = (window.screen.height / 2) - (popupHeight / 2);
-      const options = `width=${popupWidth},height=${popupHeight},left=${left},top=${top},status=no,menubar=no,toolbar=no,resizable=no`;
-      window.open("withdraw.html", "withdrawPopup", options);
-    }
     function clearSearchInput() {
       const searchInput = document.getElementById('searchInput');
       searchInput.value = '';
@@ -124,13 +75,93 @@
     function showHideClearButton() {
       const searchInput = document.getElementById('searchInput');
       const clearBtn = document.getElementById('clearBtn');
+      clearBtn.style.display = searchInput.value.length > 0 ? 'block' : 'none';
+    }
 
-      if (searchInput.value.length > 0) {
-        clearBtn.style.display = 'block';
-      } else {
-        clearBtn.style.display = 'none';
+    function openAddPopup() {
+      const popupWidth = 600;
+      const popupHeight = 700;
+      const left = (window.screen.width / 2) - (popupWidth / 2);
+      const top = (window.screen.height / 2) - (popupHeight / 2);
+      const options = `width=${popupWidth},height=${popupHeight},left=${left},top=${top},status=no,menubar=no,toolbar=no,resizable=no`;
+      window.open("goods_reg_form.html", "addProductPopup", options);
+    }
+
+    // =========================================
+    // 2. 상품 목록 로딩 및 렌더링
+    // =========================================
+
+    // 서버에서 내 상품 목록을 불러오는 함수
+    async function loadMyProducts() {
+      const list = document.getElementById("productList");
+      list.innerHTML = "<p>내 상품 목록을 불러오는 중...</p>";
+
+      try {
+        // /product/selling 엔드포인트 사용. 로그인 정보(쿠키) 포함 필수
+        const res = await fetch("/product/selling", { credentials: "include" });
+
+        if (res.status === 401) {
+          // 로그인 필요 응답 처리
+          list.innerHTML = "<p style='color: red;'>⚠️ 내 상품 목록을 보려면 로그인이 필요합니다.</p>";
+          return;
+        }
+
+        if (!res.ok) {
+          throw new Error("상품 조회 실패");
+        }
+
+        // 응답은 상품 배열 형태임
+        const products = await res.json();
+
+        renderProducts(products);
+
+      } catch (error) {
+        console.error("상품 로드 오류:", error);
+        list.innerHTML = "<p style='color: red;'>상품 정보를 불러오는 중 오류가 발생했습니다.</p>";
       }
     }
+
+    // 상품 배열을 받아 화면에 표시하는 함수
+    function renderProducts(products) {
+      const list = document.getElementById("productList");
+      list.innerHTML = "";
+
+      if (products.length === 0) {
+        list.innerHTML = "<p>아직 등록하신 상품이 없습니다. 새 상품을 등록해보세요!</p>";
+        return;
+      }
+
+      products.forEach(p => {
+        const card = document.createElement("div");
+        card.className = "product-card";
+        // 상품 상세 페이지로 이동 링크 추가 (product_id 사용)
+        card.onclick = () => window.location.href = `product_detail.html?id=${p.product_id}`;
+
+        // 상품 설명이 없을 경우 공백 처리
+        const desc = p.description || "등록된 설명 없음";
+
+        card.innerHTML = `
+                <img src="${p.image_url || 'https://via.placeholder.com/300x180?text=이미지+없음'}" alt="${p.title}" class="product-img" />
+                <div class="product-info">
+                    <div class="product-name">${p.title}</div>
+                    <div class="product-status status-${p.status.replace(/\s/g, '').toLowerCase()}">${p.status}</div>
+                    <div class="product-desc">${desc}</div>
+                    <div class="product-price">${p.price.toLocaleString()}원</div>
+                </div>
+            `;
+        list.appendChild(card);
+      });
+    }
+
+    // =========================================
+    // 3. 초기화 (상품 목록 로드)
+    // =========================================
+    window.addEventListener("load", () => {
+      // [임시] 로컬 스토리지로 받은 상품 처리 로직 제거 (실제 서버 통신 시 불필요)
+
+      // 서버에서 내 상품 목록 로드 시작
+      loadMyProducts();
+    });
   </script>
 
 </body>
