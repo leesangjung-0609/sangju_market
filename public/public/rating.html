@@ -5,8 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>내 평점 - 중고마켓</title>
   <link rel="stylesheet" href="style.css" />
+  
 </head>
 <body>
+    <script src="login_out.js"></script>
     <nav>
     <div class="logo">
       <a href="main.html">Re:Born</a>
@@ -20,25 +22,23 @@
     </div>
 
     <ul class="menu">
-        <li>
-            <a href="#">마이 페이지</a>
-            <ul class="submenu" style="left: -30px;">
-            <li><a href="my_info.html">내 정보</a></li>
-            <li><a href="goods_reg.html">등록한 상품 목록</a></li>
-            <li><a href="rating.html">후기 / 평점</a></li>
-            <li><a href="javascript:void(0);" onclick = "openWithdrawPopup()">탈퇴하기</a></li>
-            </li>
-            </ul>
-        </li>
+      <li id="mypageMenu">
+        <a href="#">마이 페이지</a>
+        <ul class="submenu" style="left: -30px;">
+          <li><a href="my_info.html">내 정보</a></li>
+          <li><a href="goods_reg.html">등록한 상품 목록</a></li>
+          <li><a href="rating.html">후기 / 평점</a></li>
+          <li><a href="javascript:void(0);" onclick="openWithdrawPopup()">탈퇴하기</a></li>
+        </ul>
+      </li>
 
-
-        <li>
-            <a href="#">로그인/회원가입</a>
-            <ul class="submenu">
-            <li><a href="login.html">로그인</a></li>
-            <li><a href="signup.html">회원가입</a></li>
-            </ul>
-        </li>
+      <li id="authMenu">
+        <a href="#" id="authLink">로그인/회원가입</a>
+        <ul class="submenu" id="authSubmenu">
+          <li><a href="login.html">로그인</a></li>
+          <li><a href="signup.html">회원가입</a></li>
+        </ul>
+      </li>
     </ul>
   </nav>
   <main class="container">
@@ -73,6 +73,7 @@
       </ul>
     </section>
   </main>
+  
   <script>
     function openWithdrawPopup() {
       const popupWidth = 500;
@@ -99,6 +100,8 @@
         clearBtn.style.display = 'none';
       }
     }
+    
   </script>
+  
 </body>
 </html>

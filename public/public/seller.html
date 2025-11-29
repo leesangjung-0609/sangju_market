@@ -1,48 +1,53 @@
 <!DOCTYPE html>
 <html lang="ko">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>판매자 상점 - 중고마켓</title>
-        <link rel="stylesheet" href="style.css" />
-        <style>
-.profile-container {
-  display: flex; /* 👈 핵심: 자식 요소를 가로로 배치 */
-  align-items: center; /* 👈 세로 중앙 정렬 */
-  gap: 24px; /* 👈 이미지와 정보 사이의 간격 */
-  padding: 20px;
-  background-color: #f9f9f9;
-  border-radius: 12px;
-  border: 1px solid #eee;
-}
 
-.profile-avatar {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%; /* 👈 원형 프로필 사진 */
-  object-fit: cover;
-  flex-shrink: 0; /* 👈 화면이 줄어도 찌그러지지 않게 함 */
-}
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>판매자 상점 - 중고마켓</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .profile-container {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      padding: 20px;
+      background-color: #f9f9f9;
+      border-radius: 12px;
+      border: 1px solid #eee;
+    }
 
-/* 'info-display'가 남은 공간을 채우도록 함 */
-.profile-container .info-display {
-  flex-grow: 1;
-}
-        </style>
-    </head>
+    .profile-avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    .profile-container .info-display {
+      flex-grow: 1;
+    }
+  </style>
+  
+</head>
+
 <body>
+  <script src="login_out.js"></script>
   <nav>
     <div class="logo">
       <a href="main.html">Re:Born</a>
     </div>
+
     <div class="search-bar">
       <div class="search-container">
         <input type="text" id="searchInput" placeholder="상품명, 카테고리 검색..." oninput="showHideClearButton()" />
         <button class="clear-btn" id="clearBtn" onclick="clearSearchInput()" style="display: none;">&times;</button>
       </div>
     </div>
+
     <ul class="menu">
-      <li>
+      <li id="mypageMenu">
         <a href="#">마이 페이지</a>
         <ul class="submenu" style="left: -30px;">
           <li><a href="my_info.html">내 정보</a></li>
@@ -51,9 +56,10 @@
           <li><a href="javascript:void(0);" onclick="openWithdrawPopup()">탈퇴하기</a></li>
         </ul>
       </li>
-      <li>
-        <a href="#">로그인/회원가입</a>
-        <ul class="submenu">
+
+      <li id="authMenu">
+        <a href="#" id="authLink">로그인/회원가입</a>
+        <ul class="submenu" id="authSubmenu">
           <li><a href="login.html">로그인</a></li>
           <li><a href="signup.html">회원가입</a></li>
         </ul>
@@ -62,26 +68,26 @@
   </nav>
 
   <main class="container">
-    
+
     <section id="user-info" class="page-section">
       <h2>판매자 정보</h2>
-      
+
       <div class="profile-container">
-        
-        <img src="https://via.placeholder.com/100" alt="판매자 프로필" class="profile-avatar">
-        
+
+        <img class="profile-avatar" alt="판매자 프로필">
+
         <div class="info-display">
           <div class="info-row">
             <span class="info-label">닉네임</span>
-            <span class="info-value">친절한 판매자 A</span>
+            <span class="info-value nickname"></span>
           </div>
           <div class="info-row">
             <span class="info-label">평점</span>
-            <span class="info-value">★ 4.7 / 5.0 (후기 15개)</span>
+            <span class="info-value rating"></span>
           </div>
           <div class="info-row">
             <span class="info-label">총 판매</span>
-            <span class="info-value">52회</span>
+            <span class="info-value total-sell"></span>
           </div>
         </div>
       </div>
@@ -90,109 +96,33 @@
     <section class="history-section">
       <h3>상점 후기</h3>
       <ul class="item-list" id="review-list">
-        <li class="item-list-item">
-          <img src="https://via.placeholder.com/60" alt="구매자 프로필">
-          <div class="item-info">
-            <p class="rating">★★★★★</p>
-            <p class="review-content">"답변도 빠르시고 엄청 친절하세요! 물건 상태도 S급입니다!"</p>
-            <p class="seller">구매자: aple123</p>
-          </div>
-        </li>
-         <li class="item-list-item">
-          <img src="https://via.placeholder.com/60" alt="구매자 프로필">
-          <div class="item-info">
-            <p class="rating">★★★★☆</p>
-            <p class="review-content">"책 모서리가 조금 닳았지만 싸게 잘 샀습니다."</p>
-            <p class="seller">구매자: student01</p>
-          </div>
-        </li>
+        <p>후기가 없습니다.</p>
       </ul>
     </section>
 
     <section class="history-section">
       <h3>판매중인 상품</h3>
       <div class="card-grid" id="selling-list">
-        <div class="product-card">
-          <a href="product_detail.html?id=1">
-            <img src="https://via.placeholder.com/220x180" alt="상품1">
-            <div class="card-content">
-              <h4>거의 새것! 게이밍 마우스</h4>
-              <p class="price">35,000원</p>
-              <p class="date">등록일: 2025-11-01</p>
-            </div>
-          </a>
-        </div>
-        <div class="product-card">
-          <a href="product_detail.html?id=2">
-            <img src="https://via.placeholder.com/220x180" alt="상품2">
-            <div class="card-content">
-              <h4>제목이 아주 긴 상품입니다...</h4>
-              <p class="price">12,000원</p>
-              <p class="date">등록일: 2025-10-28</p>
-            </div>
-          </a>
-        </div>
-      </div>
-      </section>
-
-          <!-- ✅ 판매 내역 -->
-    <section class="history-section">
-      <h3>판매 내역</h3>
-      <div class="card-grid" id="sales-list">
-        <div class="product-card">
-          <a href="product_detail.html?id=1">
-            <img src="activity.jpg" alt="상품1">
-            <div class="card-content">
-              <h4>상품1</h4>
-              <p class="price">10,000원</p>
-              <p class="date">판매일: 2025-10-05</p>
-            </div>
-          </a>
-        </div>
-
-        <div class="product-card">
-          <a href="product_detail.html?id=2">
-            <img src="healing.jpg" alt="상품2">
-            <div class="card-content">
-              <h4>상품2</h4>
-              <p class="price">12,000원</p>
-              <p class="date">판매일: 2025-09-28</p>
-            </div>
-          </a>
-        </div>
+        <p>판매 중인 상품을 불러오는 중...</p>
       </div>
     </section>
 
-    <!-- ✅ 구매 내역 -->
+    <section class="history-section">
+      <h3>판매 내역</h3>
+      <div class="card-grid" id="sales-list">
+        <p>판매 내역을 불러오는 중...</p>
+      </div>
+    </section>
+
     <section class="history-section">
       <h3>구매 내역</h3>
       <div class="card-grid" id="purchase-list">
-        <div class="product-card">
-          <a href="product_detail.html?id=3">
-            <img src="https://via.placeholder.com/220" alt="상품3">
-            <div class="card-content">
-              <h4>상품3</h4>
-              <p class="price">8,000원</p>
-              <p class="date">구매일: 2025-10-12</p>
-            </div>
-          </a>
-        </div>
-
-        <div class="product-card">
-          <a href="product_detail.html?id=4">
-            <img src="https://via.placeholder.com/220" alt="상품4">
-            <div class="card-content">
-              <h4>상품4</h4>
-              <p class="price">15,000원</p>
-              <p class="date">구매일: 2025-09-10</p>
-            </div>
-          </a>
-        </div>
+        <p>구매 내역을 불러오는 중...</p>
       </div>
     </section>
 
   </main>
-
+  
   <script>
     function openWithdrawPopup() {
       const popupWidth = 500;
@@ -202,6 +132,7 @@
       const options = `width=${popupWidth},height=${popupHeight},left=${left},top=${top},status=no,menubar=no,toolbar=no,resizable=no`;
       window.open("withdraw.html", "withdrawPopup", options);
     }
+
     function clearSearchInput() {
       const searchInput = document.getElementById('searchInput');
       searchInput.value = '';
@@ -213,12 +144,56 @@
       const searchInput = document.getElementById('searchInput');
       const clearBtn = document.getElementById('clearBtn');
 
-      if (searchInput.value.length > 0) {
-        clearBtn.style.display = 'block';
-      } else {
-        clearBtn.style.display = 'none';
-      }
+      clearBtn.style.display = searchInput.value.length > 0 ? 'block' : 'none';
     }
+
+    // URL에서 sellerId 가져오기
+    const urlParams = new URLSearchParams(window.location.search);
+    const sellerId = urlParams.get("sellerId");
+
+    if (!sellerId) {
+      console.error("sellerId가 URL에서 전달되지 않았습니다.");
+    }
+
+    // 판매자 정보 불러오기
+    fetch(`/user/seller/${sellerId}`)
+      .then(res => res.json())
+      .then(user => {
+        document.querySelector(".info-value.nickname").textContent = user.username;
+        document.querySelector(".profile-avatar").src =
+          user.profile_img || "https://via.placeholder.com/100";
+      })
+      .catch(() => console.log("판매자 정보를 불러오지 못했습니다."));
+
+    // 판매중인 상품 불러오기
+    fetch(`/product/seller/${sellerId}`)
+      .then(res => res.json())
+      .then(products => {
+        const list = document.getElementById("selling-list");
+        list.innerHTML = "";
+
+        if (products.length === 0) {
+          list.innerHTML = `<p>판매 중인 상품이 없습니다.</p>`;
+          return;
+        }
+
+        products.forEach(p => {
+          list.innerHTML += `
+          <div class="product-card">
+            <a href="product_detail.html?id=${p.product_id}">
+              <img src="${p.image_url}" alt="">
+              <div class="card-content">
+                <h4>${p.title}</h4>
+                <p class="price">${p.price}원</p>
+                <p class="date">등록일: ${p.created_at.slice(0, 10)}</p>
+              </div>
+            </a>
+          </div>`;
+        });
+      });
+      
   </script>
+  
 </body>
+
 </html>

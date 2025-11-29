@@ -6,19 +6,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>내 정보 - Re:Born</title>
   <link rel="stylesheet" href="style.css" />
+  
 </head>
 
 <body>
+  <script src="my_info.js"></script>
   <nav>
-    <div class="logo"><a href="main.html">Re:Born</a></div>
+    <div class="logo">
+      <a href="main.html">Re:Born</a>
+    </div>
+
     <div class="search-bar">
       <div class="search-container">
         <input type="text" id="searchInput" placeholder="상품명, 카테고리 검색..." oninput="showHideClearButton()" />
         <button class="clear-btn" id="clearBtn" onclick="clearSearchInput()" style="display: none;">&times;</button>
       </div>
     </div>
+
     <ul class="menu">
-      <li><a href="#">마이 페이지</a>
+      <li id="mypageMenu">
+        <a href="#">마이 페이지</a>
         <ul class="submenu" style="left: -30px;">
           <li><a href="my_info.html">내 정보</a></li>
           <li><a href="goods_reg.html">등록한 상품 목록</a></li>
@@ -26,8 +33,10 @@
           <li><a href="javascript:void(0);" onclick="openWithdrawPopup()">탈퇴하기</a></li>
         </ul>
       </li>
-      <li><a href="#">로그인/회원가입</a>
-        <ul class="submenu">
+
+      <li id="authMenu">
+        <a href="#" id="authLink">로그인/회원가입</a>
+        <ul class="submenu" id="authSubmenu">
           <li><a href="login.html">로그인</a></li>
           <li><a href="signup.html">회원가입</a></li>
         </ul>
@@ -79,7 +88,8 @@
       </div>
     </section>
   </main>
-
+  
+  <script src="login_out.js"></script>
   <script>
     // 기존 UI 및 유저 정보 로직 유지
     function openWithdrawPopup() {
@@ -118,9 +128,11 @@
     //     })
     //     .catch(err => console.error("내 정보 불러오기 실패:", err));
     // });
+    
   </script>
 
-  <script src="my_info.js"></script>
+  
+  
 </body>
 
 </html>

@@ -7,9 +7,11 @@
   <title>중고거래 사이트</title>
   <link href="https://fonts.googleapis.com/css2?family=SUIT:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  
 </head>
 
 <body>
+  <script src="login_out.js"></script>
   <!-- 네비게이션 바 -->
   <nav>
     <div class="logo">
@@ -73,13 +75,9 @@
   <!-- 상품 목록 -->
   <div class="product-container" id="productContainer"></div>
 
+  
   <script>
-    // ----------------------
-    // 로그인/회원 상태 변수
-    // ----------------------
-    let loggedInUser = null; // 사용자명
-    let isLoggedIn = false;  // 로그인 상태
-    let status = null;       // 회원 상태: 'active', 'withdrawn'
+    
 
     // ----------------------
     // 회원 탈퇴 팝업
@@ -109,7 +107,6 @@
       const clearBtn = document.getElementById('clearBtn');
       clearBtn.style.display = searchInput.value ? 'block' : 'none';
     }
-
     // ----------------------
     // 필터: 카테고리 + 검색 + 가격
     // ----------------------
@@ -220,41 +217,8 @@
     // ----------------------
     // 로그인 상태 처리
     // ----------------------
-    async function checkLoginStatus() {
-      try {
-        const res = await fetch("/user/status", { credentials: 'include' });
-        const data = await res.json();
+    
 
-        status = data.status; // 'active' or 'withdrawn'
-        if (status === 'active') {
-          loggedInUser = data.username;
-          isLoggedIn = true;
-        } else {
-          loggedInUser = null;
-          isLoggedIn = false;
-        }
-
-        updateAuthMenu();
-      } catch (err) {
-        console.error("로그인 상태 확인 실패:", err);
-      }
-    }
-
-    function updateAuthMenu() {
-      const authLink = document.getElementById('authLink');
-      const authSubmenu = document.getElementById('authSubmenu');
-
-      if (isLoggedIn) {
-        authLink.textContent = `${loggedInUser}님`;
-        authSubmenu.innerHTML = `<li><a href="javascript:void(0);" onclick="logout()">로그아웃</a></li>`;
-      } else {
-        authLink.textContent = '로그인/회원가입';
-        authSubmenu.innerHTML = `
-          <li><a href="login.html">로그인</a></li>
-          <li><a href="signup.html">회원가입</a></li>
-        `;
-      }
-    }
 
     async function login(username, password) {
       try {
@@ -298,10 +262,10 @@
         console.error("로그아웃 실패:", err);
       }
     }
-
-    // 페이지 로드시 로그인 상태 확인
-    checkLoginStatus();
-
+    
+    
   </script>
+  
 </body>
+
 </html>

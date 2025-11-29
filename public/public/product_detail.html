@@ -51,12 +51,16 @@
       white-space: pre-line;
     }
   </style>
+  <script src="login_out.js"></script>
 </head>
 
 <body>
-
+  <script src="my_info.js"></script>
   <nav>
-    <div class="logo"><a href="main.html">Re:Born</a></div>
+    <div class="logo">
+      <a href="main.html">Re:Born</a>
+    </div>
+
     <div class="search-bar">
       <div class="search-container">
         <input type="text" id="searchInput" placeholder="상품명, 카테고리 검색..." oninput="showHideClearButton()" />
@@ -67,15 +71,16 @@
     <ul class="menu">
       <li id="mypageMenu">
         <a href="#">마이 페이지</a>
-        <ul class="submenu" style="left:-30px;">
+        <ul class="submenu" style="left: -30px;">
           <li><a href="my_info.html">내 정보</a></li>
           <li><a href="goods_reg.html">등록한 상품 목록</a></li>
           <li><a href="rating.html">후기 / 평점</a></li>
           <li><a href="javascript:void(0);" onclick="openWithdrawPopup()">탈퇴하기</a></li>
         </ul>
       </li>
-      <li>
-        <a id="authLink" href="#">로그인/회원가입</a>
+
+      <li id="authMenu">
+        <a href="#" id="authLink">로그인/회원가입</a>
         <ul class="submenu" id="authSubmenu">
           <li><a href="login.html">로그인</a></li>
           <li><a href="signup.html">회원가입</a></li>
@@ -119,7 +124,7 @@
     <button id="commentSubmitBtn" style="margin-top:10px;">댓글 작성</button>
   </section>
 
-
+  
   <script>
     // =========================================
     // 1. 팝업 및 검색창 UI 관련 함수
@@ -387,9 +392,9 @@
       loadProduct();           // 상품 정보 로드
       loadComments();          // 댓글 로드
     })();
-
+    
   </script>
-
+  
 </body>
 
 </html>
