@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>내 정보 수정 - 중고마켓</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <nav>
+    <div class="logo">
+      <a href="main.html">Re:Born</a>
+    </div>
+
+    <div class="search-bar">
+      <div class="search-container">
+        <input type="text" id="searchInput" placeholder="상품명, 카테고리 검색..." oninput="showHideClearButton()" />
+        <button class="clear-btn" id="clearBtn" onclick="clearSearchInput()" style="display: none;">&times;</button>
+      </div>
+    </div>
+
+    <ul class="menu">
+        <li>
+            <a href="#">마이 페이지</a>
+            <ul class="submenu" style="left: -30px;">
+            <li><a href="my_info.html">내 정보</a></li>
+            <li><a href="goods_reg.html">등록한 상품 목록</a></li>
+            <li><a href="rating.html">후기 / 평점</a></li>
+            <li><a href="javascript:void(0);" onclick = "openWithdrawPopup()">탈퇴하기</a></li>
+            </li>
+            </ul>
+        </li>
+
+
+        <li>
+            <a href="#">로그인/회원가입</a>
+            <ul class="submenu">
+            <li><a href="login.html">로그인</a></li>
+            <li><a href="signup.html">회원가입</a></li>
+            </ul>
+        </li>
+    </ul>
+  </nav>
+
+  <main class="container">
+    <section id="my-info" class="page-section">
+      <h2>내 정보 수정</h2>
+      <form>
+        <div class="form-group">
+          <label for="user-id">아이디</label>
+          <input type="text" id="user-id" placeholder="아이디를 입력해주세요"/>
+        </div>
+        <div class="form-group">
+          <label for="nickname">닉네임</label>
+          <input type="text" id="nickname" placeholder="닉네임" />
+        </div>
+        <div class="form-group">
+          <label for="current-pw">현재 비밀번호</label>
+          <input type="password" id="current-pw" placeholder="현재 비밀번호" />
+        </div>
+        <div class="form-group">
+          <label for="new-pw">새 비밀번호</label>
+          <input type="password" id="new-pw" placeholder="새 비밀번호" />
+        </div>
+        <div class="form-group">
+          <label for="new-pw-confirm">새 비밀번호 확인</label>
+          <input type="password"id="new-pw-confirm" placeholder="새 비밀번호 확인" />
+        </div>
+        <button type="submit" class="btn btn-primary">정보 수정하기</button>
+      </form>
+    </section>
+  </main>
+
+  <script>
+    function openWithdrawPopup() {
+      const popupWidth = 500;
+      const popupHeight = 650;
+      const left = (window.screen.width / 2) - (popupWidth / 2);
+      const top = (window.screen.height / 2) - (popupHeight / 2);
+      const options = `width=${popupWidth},height=${popupHeight},left=${left},top=${top},status=no,menubar=no,toolbar=no,resizable=no`;
+      window.open("withdraw.html", "withdrawPopup", options);
+    }
+    function clearSearchInput() {
+      const searchInput = document.getElementById('searchInput');
+      searchInput.value = '';
+      showHideClearButton();
+      searchInput.focus();
+    }
+
+    function showHideClearButton() {
+      const searchInput = document.getElementById('searchInput');
+      const clearBtn = document.getElementById('clearBtn');
+
+      if (searchInput.value.length > 0) {
+        clearBtn.style.display = 'block';
+      } else {
+        clearBtn.style.display = 'none';
+      }
+    }
+  </script>
+</body>
+</html>

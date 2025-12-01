@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>회원가입</title>
+  <link href="https://fonts.googleapis.com/css2?family=SUIT:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'SUIT', sans-serif;
+      background-color: #f8f9fa;
+      margin: 0;
+      padding: 0;
+    }
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #ffffff;
+      color: #333;
+      padding: 12px 20px;
+      border-bottom: 1px solid #e0e0e0;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      cursor: pointer;
+      color: #2b6cb0;
+      text-decoration: none;
+    }
+
+    .container {
+      max-width: 400px;
+      margin: 120px auto 60px auto;
+      background: #fff;
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #2c3e50;
+    }
+
+    label {
+      display: block;
+      margin: 15px 0 5px;
+      font-weight: 500;
+      color: #333;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    input[type="email"] {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-sizing: border-box;
+      font-size: 15px;
+    }
+
+    .id-container {
+      display: flex;
+      gap: 10px;
+    }
+
+    .id-container input {
+      flex: 1;
+    }
+
+    .id-container button {
+      flex-shrink: 0;
+      background-color: #2b6cb0;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .id-container button:hover {
+      background-color: #22588f;
+    }
+
+    button.signup-btn {
+      width: 100%;
+      padding: 12px;
+      background-color: #2b6cb0;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: background-color 0.3s;
+    }
+
+    button.signup-btn:hover {
+      background-color: #22588f;
+    }
+
+    .toggle {
+      text-align: center;
+      margin-top: 25px;
+      color: #555;
+      font-size: 15px;
+    }
+
+    .toggle span,
+    .toggle a span {
+      color: #2b6cb0;
+      cursor: pointer;
+      font-weight: 600;
+      text-decoration: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="top-bar">
+    <a href="main.html" class="logo">Re:Born</a>
+  </div>
+
+  <div class="container">
+    <h2>회원가입</h2>
+
+    <label for="signupId">아이디</label>
+    <div class="id-container">
+      <input type="text" id="signupId" placeholder="아이디 입력">
+      <button type="button" onclick="checkId()">중복 확인</button>
+    </div>
+    <label for="signupPw">비밀번호</label>
+    <input type="password" id="signupPw" placeholder="비밀번호 입력">
+
+    <label for="nickname">닉네임</label>
+    <input type="text" id="nickname" placeholder="닉네임 입력">
+
+    <label for="fullname">이름</label>
+    <input type="text" id="fullname" placeholder="이름 입력">
+
+    <label for="signupEmail">이메일</label>
+    <input type="email" id="signupEmail" placeholder="이메일 입력">
+
+    <button class="signup-btn" onclick="signup()">회원가입</button>
+
+    <div class="toggle">
+      이미 계정이 있으신가요? <a href="login.html"><span>로그인</span></a>
+    </div>
+  </div>
+
+  <script>
+    async function signup() {
+      const username = document.getElementById('signupId').value;
+      const password = document.getElementById('signupPw').value;
+      const name = document.getElementById('fullname').value;
+      const email = document.getElementById('signupEmail').value;
+      const phone = ""; // 필요하면 input 추가
+
+      try {
+        const res = await fetch("/user/signup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password, name, email, phone })
+        });
+
+        if (!res.ok) {
+          const errText = await res.text();
+          console.error("회원가입 실패:", errText);
+          alert("회원가입 실패: " + errText);
+          return;
+        }
+
+        const text = await res.text();
+        console.log("서버 응답:", text);
+        alert(text);
+        window.location.href = "login.html";
+
+      } catch (err) {
+        console.error("서버 요청 오류:", err);
+        alert("서버 요청 오류 발생");
+      }
+    }
+
+    function checkId() {
+      const id = document.getElementById('signupId').value;
+      if (!id) {
+        alert("아이디를 입력해주세요!");
+        return;
+      }
+      alert("사용 가능한 아이디입니다.");
+    }
+  </script>
+
+</body>
+
+</html>
