@@ -6,10 +6,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>내 정보 - Re:Born</title>
   <link rel="stylesheet" href="style.css" />
-  
+
 </head>
 
-<body>
+<body class="loading-screen">
   <script src="my_info.js"></script>
   <nav>
     <div class="logo">
@@ -47,25 +47,50 @@
   <main class="container">
     <section id="user-info" class="page-section">
       <h2>내 정보</h2>
+
       <div class="profile-container">
-        <img src="https://via.placeholder.com/100" alt="판매자 프로필" class="profile-avatar">
         <div class="info-display">
+
           <div class="info-row">
             <span class="info-label">아이디</span>
             <span class="info-value id"></span>
           </div>
+
           <div class="info-row">
             <span class="info-label">닉네임</span>
             <span class="info-value nickname"></span>
           </div>
+
+          <div class="info-row">
+            <span class="info-label">이메일</span>
+            <span class="info-value email"></span>
+          </div>
+
+          <div class="info-row">
+            <span class="info-label">전화번호</span>
+            <span class="info-value phone"></span>
+          </div>
+
+          <div class="info-row">
+            <span class="info-label">생년월일</span>
+            <span class="info-value birth"></span>
+          </div>
+
+          <div class="info-row">
+            <span class="info-label">성별</span>
+            <span class="info-value gender"></span>
+          </div>
+
         </div>
       </div>
+
       <div class="button-container">
         <a href="my_info_edit.html" class="btn btn-primary">정보 수정하기</a>
       </div>
     </section>
-    <section id="wishlist" class="page-section">
-      <h2>찜 목록 (Wishlist)</h2>
+
+    <section id="wishlist" class="history-section">
+      <h3>찜 목록</h3>
       <div class="card-grid" id="wishlist-display">
       </div>
     </section>
@@ -88,7 +113,7 @@
       </div>
     </section>
   </main>
-  
+
   <script src="login_out.js"></script>
   <script>
     // 기존 UI 및 유저 정보 로직 유지
@@ -128,11 +153,60 @@
     //     })
     //     .catch(err => console.error("내 정보 불러오기 실패:", err));
     // });
-    
+    document.addEventListener("DOMContentLoaded", () => {
+      // 로그인 상태 체크
+      fetch("/user/current")
+        .then(res => {
+          if (res.status === 401) {
+            throw new Error("로그인이 필요합니다.");
+          }
+          return fetch("/user/info");
+        })
+        .then(res => res.json())
+        .then(data => {
+          // 기본 정보 표시
+          document.querySelector(".info-value.id").textContent = data.username;
+          document.querySelector(".info-value.nickname").textContent = data.name;
+
+          // 이메일
+          document.querySelector(".info-value.email").textContent =
+            data.email || "정보 없음";
+
+          // 전화번호 포맷팅
+          const formattedPhone = data.phone
+            ? data.phone.replace(/(\d{3})(\d{4})(\d{4})/, "$1-$2-$3")
+            : "정보 없음";
+          document.querySelector(".info-value.phone").textContent = formattedPhone;
+
+          // 생년월일 포맷팅
+          const formattedBirth = data.birth
+            ? data.birth
+              .replace(/(\d{4})-(\d{2})-(\d{2})/, "$1.$2.$3")
+              .replace(/(\d{4})(\d{2})(\d{2})/, "$1.$2.$3")
+            : "정보 없음";
+          document.querySelector(".info-value.birth").textContent = formattedBirth;
+
+          // 성별 변환
+          let genderDisplay = "정보 없음";
+          if (data.gender) {
+            const gender = data.gender.toUpperCase();
+            if (gender === "M") genderDisplay = "남성";
+            else if (gender === "F") genderDisplay = "여성";
+            else genderDisplay = data.gender;
+          }
+          document.querySelector(".info-value.gender").textContent = genderDisplay;
+        })
+        .catch(error => {
+          console.error("내 정보 불러오기 실패:", error);
+          alert("로그인이 필요합니다.");
+          window.location.href = "login.html";
+        });
+    });
+
   </script>
 
-  
-  
+
+
 </body>
 
 </html>

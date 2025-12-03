@@ -874,3 +874,20 @@ main.container {
   height: 180px;
   object-fit: cover;
 }
+
+/* ------------------------------
+   로딩 화면 제어 (깜빡임 방지)
+------------------------------ */
+
+/* 로딩 중일 때: 화면 공간은 차지하되 내용은 숨김 */
+body.loading-screen {
+  visibility: hidden; 
+  opacity: 0;
+}
+
+/* 로딩 완료 후: 부드럽게 나타나게 설정 (선택사항) */
+body {
+  visibility: visible;
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out; /* 부드러운 전환 효과 */
+}
