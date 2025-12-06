@@ -120,7 +120,19 @@
       }
     }
 
-    // 상품 배열을 받아 화면에 표시하는 함수
+// 1. [수정됨] 배지 HTML 생성 함수 (여백 제거)
+    function getStatusBadgeHTML(status) {
+      let color = '#2c3e50'; // 기본: 남색
+      
+      if (status === '판매중') color = '#2ecc71';      // 초록색
+      else if (status === '예약중') color = '#f39c12'; // 주황색
+      else if (status === '판매완료') color = '#7f8c8d'; // 회색
+
+      // 한 줄 배치를 위해 margin-bottom 제거, 텍스트 높이 맞춤(vertical-align)
+      return `<span style="display:inline-block; padding:3px 6px; border-radius:4px; color:white; background-color:${color}; font-size:12px; font-weight:bold; white-space: nowrap;">${status}</span>`;
+    }
+
+    // 2. [수정됨] 상품 목록 렌더링 함수 (한 줄 배치 적용)
     function renderProducts(products) {
       const list = document.getElementById("productList");
       list.innerHTML = "";
@@ -133,21 +145,24 @@
       products.forEach(p => {
         const card = document.createElement("div");
         card.className = "product-card";
-        // 상품 상세 페이지로 이동 링크 추가 (product_id 사용)
         card.onclick = () => window.location.href = `product_detail.html?id=${p.product_id}`;
 
-        // 상품 설명이 없을 경우 공백 처리
         const desc = p.description || "등록된 설명 없음";
+        const statusBadge = getStatusBadgeHTML(p.status);
 
         card.innerHTML = `
-                <img src="${p.image_url || 'https://via.placeholder.com/300x180?text=이미지+없음'}" alt="${p.title}" class="product-img" />
-                <div class="product-info">
-                    <div class="product-name">${p.title}</div>
-                    <div class="product-status status-${p.status.replace(/\s/g, '').toLowerCase()}">${p.status}</div>
-                    <div class="product-desc">${desc}</div>
-                    <div class="product-price">${p.price.toLocaleString()}원</div>
+            <img src="${p.image_url || 'https://via.placeholder.com/300x180?text=이미지+없음'}" alt="${p.title}" class="product-img" />
+            <div class="product-info">
+                
+                <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 5px;">
+                    ${statusBadge}
+                    <div class="product-name" style="margin: 0; font-weight: bold;">${p.title}</div>
                 </div>
-            `;
+
+                <div class="product-desc" style="margin-top: 5px;">${desc}</div>
+                <div class="product-price">${p.price.toLocaleString()}원</div>
+            </div>
+        `;
         list.appendChild(card);
       });
     }

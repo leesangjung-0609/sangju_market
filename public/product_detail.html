@@ -93,7 +93,12 @@
   <div class="detail-container">
     <img id="productImage" src="https://via.placeholder.com/350" alt="상품 이미지">
     <div class="detail-info">
-      <h2 id="productTitle">상품명 예시</h2>
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+        <span id="statusBadge"
+          style="padding: 6px 12px; border-radius: 6px; color: white; font-size: 16px; font-weight: bold; display: none;">
+        </span>
+        <h2 id="productTitle" style="margin: 0;">상품명 예시</h2>
+      </div>
       <div class="price" id="productPrice">10,000원</div>
       <div class="description" id="productDesc">
         상품 설명 예시입니다.
@@ -193,7 +198,7 @@
 
     // 상품 상세 정보 불러오기
     // 상품 상세 정보 불러오기
-    async function loadProduct() {
+async function loadProduct() {
       const params = new URLSearchParams(window.location.search);
       const productId = params.get("id");
       if (!productId) { alert("상품 ID 없음"); return; }
@@ -204,6 +209,27 @@
 
         const product = await res.json();
         const isSeller = currentUser === product.username;
+        
+        const statusBadge = document.getElementById("statusBadge");
+        if (statusBadge) {
+          statusBadge.textContent = product.status; // '판매중', '예약중' 등 텍스트 넣기
+          statusBadge.style.display = "inline-block"; // 숨겨진 배지 보이기
+
+          // 상태에 따라 배경색 변경
+          switch (product.status) {
+            case '판매중':
+              statusBadge.style.backgroundColor = '#2ecc71'; // 초록색
+              break;
+            case '예약중':
+              statusBadge.style.backgroundColor = '#f39c12'; // 주황색
+              break;
+            case '판매완료':
+              statusBadge.style.backgroundColor = '#7f8c8d'; // 회색
+              break;
+            default:
+              statusBadge.style.backgroundColor = '#2c3e50'; // 기본색
+          }
+        }
 
         document.getElementById("productImage").src = product.image_url;
         document.getElementById("productTitle").textContent = product.title;
@@ -221,7 +247,7 @@
         }
 
         document.getElementById("likeBtn").onclick = async function () {
-          // ... (중략)
+          // ... (좋아요 기능 중략)
         };
       } catch (err) {
         console.error(err);
