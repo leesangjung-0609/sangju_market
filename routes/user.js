@@ -114,11 +114,23 @@ router.get("/info", (req, res) => {
 
     const userId = req.session.user.user_id;
 
+    // [수정됨] DATE_FORMAT(컬럼명, '%Y-%m-%d') AS 별칭
+    // 이렇게 하면 "1999-01-30" 같은 깔끔한 문자열로 가져옵니다.
     const sql = `
-SELECT user_id, username, name, email, phone, status, age, birth, gender, created_at 
-FROM user 
-WHERE user_id = ?
-`;
+        SELECT 
+            user_id, 
+            username, 
+            name, 
+            email, 
+            phone, 
+            status, 
+            age, 
+            DATE_FORMAT(birth, '%Y-%m-%d') AS birth, 
+            gender, 
+            created_at 
+        FROM user 
+        WHERE user_id = ?
+    `;
 
     db.query(sql, [userId], (err, results) => {
         if (err) {
