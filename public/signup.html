@@ -138,141 +138,168 @@
   </style>
 </head>
 
-<body>
+<body class="loading-screen">
+  <script src="login_out.js"></script>
+  <h2 id="pageTitle">새 상품 등록</h2>
 
-  <div class="top-bar">
-    <a href="main.html" class="logo">Re:Born</a>
-  </div>
+  <form id="productForm">
+    <input type="hidden" id="productId" name="product_id" value="">
+    <input type="hidden" id="currentImageUrl" name="currentImageUrl" value="">
 
-  <div class="container">
-    <h2>회원가입</h2>
+    <label for="name">상품명</label>
+    <input type="text" id="name" name="title" placeholder="상품명" required>
 
-    <label for="signupId">아이디</label>
-    <div class="id-container">
-      <input type="text" id="signupId" placeholder="아이디 입력">
-      <button type="button" onclick="checkId()">중복 확인</button>
-    </div>
-    <label for="signupPw">비밀번호</label>
-    <input type="password" id="signupPw" placeholder="비밀번호 입력">
+    <label for="desc">상품 설명</label>
+    <textarea id="desc" name="description" placeholder="상품 설명" required></textarea>
 
-    <label for="nickname">닉네임 (사용자 이름)</label>
-    <input type="text" id="nickname" placeholder="닉네임 입력">
+    <label for="category">카테고리</label>
+    <input list="categoryList" id="category" name="category" placeholder="카테고리 선택" required>
+    <datalist id="categoryList">
+      <option value="옷"></option>
+      <option value="가전"></option>
+      <option value="가구"></option>
+      <option value="생활/주방"></option>
+      <option value="취미/게임"></option>
+      <option value="기타"></option>
+    </datalist>
 
-    <label for="fullname">이름</label>
-    <input type="text" id="fullname" placeholder="이름 입력">
+    <label for="price">가격 (원)</label>
+    <input type="number" id="price" name="price" placeholder="가격" required>
 
-    <label for="signupEmail">이메일</label>
-    <input type="email" id="signupEmail" placeholder="이메일 입력">
-
-    <label for="phone">전화번호</label>
-    <input type="tel" id="phone" placeholder="전화번호 입력 (- 없이)">
-
-    <label for="birthDate">생년월일</label>
-    <input type="date" id="birthDate">
-
-    <label>성별</label>
-    <div class="gender-container">
-      <label><input type="radio" name="gender" value="male" checked> 남성</label>
-      <label><input type="radio" name="gender" value="female"> 여성</label>
-      <label><input type="radio" name="gender" value="other"> 기타</label>
+    <label>상품 상태</label>
+    <div class="status-container">
+      <label><input type="radio" name="status" value="판매중" checked> 판매중</label>
+      <label><input type="radio" name="status" value="예약중"> 예약중</label>
+      <label><input type="radio" name="status" value="판매완료"> 판매완료</label>
     </div>
 
-    <button class="signup-btn" onclick="signup()">회원가입</button>
+    <label for="imgFile">상품 이미지</label>
+    <input type="file" id="imgFile" name="productImage" accept="image/*">
+    <img id="productImagePreview" src="https://via.placeholder.com/300" style="display:none;">
 
-    <div class="toggle">
-      이미 계정이 있으신가요? <a href="login.html"><span>로그인</span></a>
-    </div>
-  </div>
+    <button type="submit" id="submitBtn">등록하기</button>
+  </form>
 
   <script>
-    function getAge(fullBirthDate) {
-        if (!fullBirthDate) return null; // 값이 없으면 null 반환
-        
-        const birth = new Date(fullBirthDate);
-        const today = new Date();
-        
-        let age = today.getFullYear() - birth.getFullYear();
+    const productForm = document.getElementById("productForm");
+    const pageTitle = document.getElementById("pageTitle");
+    const submitBtn = document.getElementById("submitBtn");
+    const titleInput = document.getElementById("name");
+    const descInput = document.getElementById("desc");
+    const categoryInput = document.getElementById("category");
+    const priceInput = document.getElementById("price");
+    const statusRadios = document.querySelectorAll('input[name="status"]');
+    const imgFileInput = document.getElementById("imgFile");
+    const imagePreview = document.getElementById("productImagePreview");
+    const productIdHidden = document.getElementById("productId");
+    const currentImageUrlHidden = document.getElementById("currentImageUrl");
 
-        // 생일이 지나지 않았으면 나이 -1
-        if (today.getMonth() < birth.getMonth() || 
-            (today.getMonth() === birth.getMonth() && today.getDate() < birth.getDate())) {
-            age--;
-        }
-        return age;
-    }
-    
-    // getFullBirthDate 함수는 더 이상 필요 없으므로 제거됩니다.
+    let isEditMode = false;
+    let currentProductId = null;
 
-    async function signup() {
-      const username = document.getElementById('signupId').value;
-      const password = document.getElementById('signupPw').value;
-      const name = document.getElementById('fullname').value;
-      const email = document.getElementById('signupEmail').value;
-      const phone = document.getElementById('phone').value;
-      // ***********************************************
-      // 📌 변경: input type="date"에서 YYYY-MM-DD 값을 바로 가져옴
-      // ***********************************************
-      const fullBirthDate = document.getElementById('birthDate').value; 
-      const gender = document.querySelector('input[name="gender"]:checked').value;
-      
-      
-      // 필수 유효성 검사 강화: 생년월일이 입력되었는지 확인
-      if (!fullBirthDate) {
-        alert("생년월일을 선택해주세요.");
+    async function loadProductForEdit() {
+      const params = new URLSearchParams(window.location.search);
+      const productId = params.get("id");
+
+      if (!productId) {
+        pageTitle.textContent = "새 상품 등록";
+        submitBtn.textContent = "등록하기";
+        isEditMode = false;
+        imagePreview.style.display = 'none';
+        imgFileInput.required = true;
         return;
       }
-      
-      const age = getAge(fullBirthDate);
-      
-      if (age === null || age < 0) {
-        alert("유효한 생년월일을 입력해주세요.");
-        return;
-      }
+
+      currentProductId = productId;
+      isEditMode = true;
+      pageTitle.textContent = "상품 수정";
+      submitBtn.textContent = "수정 완료";
+      productIdHidden.value = productId;
+      imgFileInput.required = false;
 
       try {
-        const res = await fetch("/user/signup", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ 
-            username, 
-            password, 
-            name, 
-            email, 
-            phone,
-            age,
-            birth: fullBirthDate, // YYYY-MM-DD 형식 그대로 전송
-            gender
-          })
-        });
+        const res = await fetch(`/product/${productId}`, { credentials: "include" });
+        if (!res.ok) throw new Error("상품 정보 로드 실패");
 
-        if (!res.ok) {
-          const errText = await res.text();
-          console.error("회원가입 실패:", errText);
-          alert("회원가입 실패: " + errText);
-          return;
+        const product = await res.json();
+
+        titleInput.value = product.title;
+        descInput.value = product.description || "";
+        categoryInput.value = product.category || "";
+        priceInput.value = product.price;
+
+        for (const radio of statusRadios) {
+          if (radio.value === product.status) {
+            radio.checked = true;
+            break;
+          }
         }
 
-        const text = await res.text();
-        console.log("서버 응답:", text);
-        alert(text);
-        window.location.href = "login.html";
+        if (product.image_url) {
+          imagePreview.src = product.image_url;
+          currentImageUrlHidden.value = product.image_url;
+          imagePreview.style.display = 'block';
+        } else {
+          imagePreview.style.display = 'none';
+        }
 
       } catch (err) {
-        console.error("서버 요청 오류:", err);
-        alert("서버 요청 오류 발생");
+        console.error("상품 로드 오류:", err);
+        alert("상품 정보를 불러오지 못했습니다.");
+        window.close();
       }
     }
 
-    function checkId() {
-      // (중복 확인 로직은 동일)
-      const id = document.getElementById('signupId').value;
-      if (!id) {
-        alert("아이디를 입력해주세요!");
-        return;
+    productForm.addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const method = isEditMode ? "PUT" : "POST";
+      const url = isEditMode ? "/product/update" : "/product/add";
+      const formData = new FormData(productForm);
+
+      if (!isEditMode) formData.delete("currentImageUrl");
+
+      try {
+        const res = await fetch(url, { method, body: formData, credentials: "include" });
+        const result = await res.json();
+
+        if (res.ok) {
+          alert(result.message || (isEditMode ? "상품이 수정되었습니다!" : "상품이 등록되었습니다!"));
+          if (window.opener && typeof window.opener.loadMyProducts === "function") {
+            window.opener.loadMyProducts();
+          }
+          window.close();
+        } else {
+          alert(result.message || (isEditMode ? "상품 수정 실패" : "상품 등록 실패"));
+        }
+      } catch (err) {
+        console.error(err);
+        alert("서버 통신 오류가 발생했습니다.");
       }
-      alert("사용 가능한 아이디입니다.");
-    }
+    });
+
+    imgFileInput.addEventListener("change", function (e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = e => {
+          imagePreview.src = e.target.result;
+          imagePreview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      } else if (isEditMode && currentImageUrlHidden.value) {
+        imagePreview.src = currentImageUrlHidden.value;
+        imagePreview.style.display = 'block';
+      } else {
+        imagePreview.style.display = 'none';
+        imagePreview.src = "https://via.placeholder.com/300";
+      }
+    });
+
+    loadProductForEdit();
   </script>
+</body>
+
 
 </body>
 
