@@ -17,7 +17,7 @@ DB_CONFIG = {
 }
 
 # ----------------------------
-# DB 조회 함수 (변경 없음)
+# DB 조회 함수
 # ----------------------------
 def get_sections():
     conn = mysql.connector.connect(**DB_CONFIG)
@@ -66,22 +66,25 @@ def get_students(course_id, sec_id, semester, year):
     return rows
 
 # ----------------------------
-# PDF 생성 (서식 복구 + 여백 40 + 글자 깨짐 해결)
+# PDF 생성
 # ----------------------------
 def create_attendance_pdf(course_title, dept_name, sec_id, semester, year, instructor, credits, students, filename="attendance.pdf"):
-    # [수정] 좌우 여백을 아까의 절반(40)으로 설정
+    
+    # 브라우저 탭 제목 및 파일명 설정용
+    full_title_text = f"{course_title}-{sec_id} Attendance Sheet"
+
     doc = SimpleDocTemplate(
         filename,
         pagesize=A4,
         rightMargin=40, leftMargin=40, 
-        topMargin=30, bottomMargin=40
+        topMargin=30, bottomMargin=40,
+        title=full_title_text
     )
 
     elements = []
     styles = getSampleStyleSheet()
 
     title_style = ParagraphStyle(name="TitleStyle", fontSize=18, alignment=1, spaceAfter=15)
-    # [수정] 정보 텍스트 스타일: 원래대로 좌측 정렬 및 줄간격 확보
     info_style = ParagraphStyle(name="InfoStyle", fontSize=11, leading=14, spaceAfter=10)
     name_style = ParagraphStyle(name='NameStyle', fontSize=8.5, leading=9, alignment=1)
 
@@ -94,18 +97,17 @@ def create_attendance_pdf(course_title, dept_name, sec_id, semester, year, instr
         canvas.drawCentredString(A4[0] / 2, 20, text)
         canvas.restoreState()
 
-    # 제목
-    title = Paragraph("<b>Attendance Sheet</b>", title_style)
+    # 문서 제목 (강좌명-분반 Attendance Sheet)
+    title = Paragraph(f"<b>{full_title_text}</b>", title_style)
     elements.append(title)
 
-    # [수정] 상단 정보 서식 원래대로 복구 (List Style)
+    # [수정됨] 상단 정보 블록
+    # 1. Course, Section 라인 삭제
+    # 2. Year, Semester 통합 -> "Term: 20XX - Semester"
     info_text = f"""
-    <b>Course:</b> {course_title}<br/>
-    <b>Section:</b> {sec_id}<br/>
     <b>Instructor:</b> {instructor}<br/>
     <b>Department:</b> {dept_name}<br/>
-    <b>Year:</b> {year}<br/>
-    <b>Semester:</b> {semester}<br/>
+    <b>Term:</b> {year} - {semester}<br/>
     <b>Credits:</b> {credits}<br/>
     """
     elements.append(Paragraph(info_text, info_style))
@@ -119,20 +121,18 @@ def create_attendance_pdf(course_title, dept_name, sec_id, semester, year, instr
         row = [sid, Paragraph(name, name_style), dept] + [""] * 16
         table_data.append(row)
 
-    # [수정] 너비 재계산 (글자 안 깨지게 확보)
-    # A4 폭(약 595) - 여백(80) = 515 사용 가능
-    # 50(ID) + 75(이름) + 70(학과) + (20 * 16주) = 195 + 320 = 515 (딱 맞음)
+    # 너비 설정
     col_widths = [50, 75, 70] + [20] * 16
 
     table = Table(table_data, colWidths=col_widths, repeatRows=1, hAlign='CENTER')
 
     table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), colors.Color(0.85, 0.85, 0.85)), # 헤더 색상도 원래대로 복구
+        ('BACKGROUND', (0, 0), (-1, 0), colors.Color(0.85, 0.85, 0.85)),
         ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
         ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
         ('GRID', (0, 0), (-1, -1), 0.4, colors.grey),
-        ('FONTSIZE', (0, 0), (-1, -1), 8),      # 폰트 8pt (적당함)
+        ('FONTSIZE', (0, 0), (-1, -1), 8),
         ('TOPPADDING', (0, 0), (-1, -1), 3),
         ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
     ]))
@@ -171,8 +171,8 @@ def index():
             instructor = selected[6] if selected[6] else "Unknown"
             dept_name = selected[7]
 
-            timestamp = int(time.time()) 
-            filename = f"{course_title.replace(' ', '')}_{sec_id}_{timestamp}.pdf"
+            # 파일명 형식: "강좌명-분반 Attendance Sheet.pdf"
+            filename = f"{course_title}-{sec_id} Attendance Sheet.pdf"
             
             create_attendance_pdf(course_title, dept_name, sec_id, semester, year, instructor, credits, students, filename)
             
