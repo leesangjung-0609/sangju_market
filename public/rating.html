@@ -1,100 +1,142 @@
-  <!DOCTYPE html>
-  <html lang="ko">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>내 평점 - 중고마켓</title>
-    <link rel="stylesheet" href="style.css" />
-    
-  </head>
-  <body class="loading-screen">
-      <script src="login_out.js"></script>
-      <nav>
-      <div class="logo">
-        <a href="main.html">Re:Born</a>
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Re:Born - 내 평점</title>
+  <link rel="stylesheet" href="style.css" />
+
+</head>
+
+<body class="loading-screen">
+  <script src="login_out.js"></script>
+  <nav>
+    <div class="logo">
+      <a href="main.html">Re:Born</a>
+    </div>
+
+    <div class="search-bar">
+      <div class="search-container">
+        <input type="text" id="searchInput" placeholder="상품명, 카테고리 검색..." oninput="showHideClearButton()" />
+        <button class="clear-btn" id="clearBtn" onclick="clearSearchInput()" style="display: none;">&times;</button>
       </div>
+    </div>
 
-      <div class="search-bar">
-        <div class="search-container">
-          <input type="text" id="searchInput" placeholder="상품명, 카테고리 검색..." oninput="showHideClearButton()" />
-          <button class="clear-btn" id="clearBtn" onclick="clearSearchInput()" style="display: none;">&times;</button>
-        </div>
-      </div>
-
-      <ul class="menu">
-        <li id="mypageMenu">
-          <a href="#">마이 페이지</a>
-          <ul class="submenu" style="left: -30px;">
-            <li><a href="my_info.html">내 정보</a></li>
-            <li><a href="goods_reg.html">등록한 상품 목록</a></li>
-            <li><a href="rating.html">후기</a></li>
-            <li><a href="javascript:void(0);" onclick="openWithdrawPopup()">탈퇴하기</a></li>
-          </ul>
-        </li>
-
-        <li id="authMenu">
-          <a href="#" id="authLink">로그인/회원가입</a>
-          <ul class="submenu" id="authSubmenu">
-            <li><a href="login.html">로그인</a></li>
-            <li><a href="signup.html">회원가입</a></li>
-          </ul>
-        </li>
-      </ul>
-    </nav>
-    <main class="container">
-      <section id="ratings" class="page-section">
-        <h2>내가 받은 후기</h2>
-        <ul class="item-list">
-          <li class="item-list-item">
-            <img src="https://via.placeholder.com/80x80.png?text=Item" alt="후기 상품">
-            <div class="item-info">
-              <h4><a href="#">(판매 완료) 게이밍 마우스</a></h4>
-              <p class="rating">★★★★★</p>
-              <p class="review-content">"답변도 빠르시고 엄청 친절하세요! 물건 상태도 S급입니다!"</p>
-              <p class="seller">구매자: aple123</p>
-            </div>
-          </li>
-          <li class="item-list-item">
-            <img src="https://via.placeholder.com/80x80.png?text=Item" alt="후기 상품">
-            <div class="item-info">
-              <h4><a href="#">(판매 완료) 전공 서적</a></h4>
-              <p class="rating">★★★★☆</p>
-              <p class="review-content">"책 모서리가 조금 닳았지만 싸게 잘 샀습니다."</p>
-              <p class="seller">구매자: student01</p>
-            </div>
-          </li>
+    <ul class="menu">
+      <li id="mypageMenu">
+        <a href="#">마이 페이지</a>
+        <ul class="submenu" style="left: -30px;">
+          <li><a href="my_info.html">내 정보</a></li>
+          <li><a href="goods_reg.html">등록한 상품 목록</a></li>
+          <li><a href="rating.html">후기</a></li>
+          <li><a href="javascript:void(0);" onclick="openWithdrawPopup()">탈퇴하기</a></li>
         </ul>
-      </section>
-    </main>
-    
-    <script>
-      function openWithdrawPopup() {
-        const popupWidth = 500;
-        const popupHeight = 650;
-        const left = (window.screen.width / 2) - (popupWidth / 2);
-        const top = (window.screen.height / 2) - (popupHeight / 2);
-        const options = `width=${popupWidth},height=${popupHeight},left=${left},top=${top},status=no,menubar=no,toolbar=no,resizable=no`;
-        window.open("withdraw.html", "withdrawPopup", options);
-      }
-      function clearSearchInput() {
-        const searchInput = document.getElementById('searchInput');
-        searchInput.value = '';
-        showHideClearButton();
-        searchInput.focus();
-      }
+      </li>
 
-      function showHideClearButton() {
-        const searchInput = document.getElementById('searchInput');
-        const clearBtn = document.getElementById('clearBtn');
+      <li id="authMenu">
+        <a href="#" id="authLink">로그인/회원가입</a>
+        <ul class="submenu" id="authSubmenu">
+          <li><a href="login.html">로그인</a></li>
+          <li><a href="signup.html">회원가입</a></li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+  <main class="container">
+    <section id="ratings" class="page-section">
+      <h2>내가 받은 후기</h2>
+      <ul class="item-list" id="reviewList">
+        <p>후기 목록을 불러오는 중...</p>
+      </ul>
+    </section>
+  </main>
 
-        if (searchInput.value.length > 0) {
-          clearBtn.style.display = 'block';
-        } else {
-          clearBtn.style.display = 'none';
+  <script>
+    function openWithdrawPopup() {
+      const popupWidth = 500;
+      const popupHeight = 650;
+      const left = (window.screen.width / 2) - (popupWidth / 2);
+      const top = (window.screen.height / 2) - (popupHeight / 2);
+      const options = `width=${popupWidth},height=${popupHeight},left=${left},top=${top},status=no,menubar=no,toolbar=no,resizable=no`;
+      window.open("withdraw.html", "withdrawPopup", options);
+    }
+    function clearSearchInput() {
+      const searchInput = document.getElementById('searchInput');
+      searchInput.value = '';
+      showHideClearButton();
+      searchInput.focus();
+    }
+
+    function showHideClearButton() {
+      const searchInput = document.getElementById('searchInput');
+      const clearBtn = document.getElementById('clearBtn');
+
+      if (searchInput.value.length > 0) {
+        clearBtn.style.display = 'block';
+      } else {
+        clearBtn.style.display = 'none';
+      }
+    }
+    async function loadReviews() {
+      const reviewList = document.getElementById('reviewList');
+      reviewList.innerHTML = '<p>후기 목록을 불러오는 중...</p>';
+
+      try {
+        // 1. 서버 API 호출
+        const res = await fetch("/review/received", { credentials: "include" });
+
+        if (res.status === 401) {
+          reviewList.innerHTML = '<p class="error-message">로그인이 필요합니다. 마이 페이지는 로그인 후 이용해주세요.</p>';
+          return;
         }
+        if (!res.ok) throw new Error("서버에서 후기 정보를 불러오지 못했습니다.");
+
+        const data = await res.json();
+
+        if (data.reviews && data.reviews.length > 0) {
+          reviewList.innerHTML = ''; // 로딩 메시지 제거
+
+          // 2. 후기 데이터를 순회하며 HTML 생성
+          data.reviews.forEach(review => {
+            const listItem = document.createElement('li');
+            listItem.classList.add('item-list-item');
+
+            // 상품 상태를 보여주기 위해 상품 이름 앞에 (판매 완료) 등을 표시할지 여부는
+            // 서버에서 product.status를 추가로 가져와야 확실히 구현 가능합니다.
+            // 현재는 간단하게 상품 이름만 표시합니다.
+
+            // review.created_at을 포맷팅하는 로직은 생략하고 단순 출력합니다.
+            const formattedDate = new Date(review.created_at).toLocaleDateString('ko-KR');
+
+            listItem.innerHTML = `
+                            <img src="https://via.placeholder.com/80x80.png?text=Item" alt="${review.product_title}">
+                            <div class="item-info">
+                                <h4>
+                                    <a href="product_detail.html?product_id=${review.product_id}">
+                                        ${review.product_title}
+                                    </a>
+                                </h4>
+                                <p class="review-content">"${review.content}"</p>
+                                <p class="seller">구매자: **${review.reviewer_name}** <span style="font-size: 0.8em; color: #999;">(${formattedDate})</span></p>
+                            </div>
+                        `;
+            reviewList.appendChild(listItem);
+          });
+        } else {
+          reviewList.innerHTML = '<p>아직 받은 후기가 없습니다.</p>';
+        }
+
+      } catch (error) {
+        console.error("후기 로드 실패:", error);
+        reviewList.innerHTML = `<p class="error-message">후기를 불러오는 중 오류 발생: ${error.message}</p>`;
       }
-      
-    </script>
-    
-  </body>
-  </html>
+    }
+
+    // 페이지 로드 시 함수 실행
+    document.addEventListener('DOMContentLoaded', loadReviews);
+  </script>
+
+</body>
+
+</html>
