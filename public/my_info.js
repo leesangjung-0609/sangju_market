@@ -249,8 +249,8 @@ async function loadUserInfo() {
         let genderDisplay = "정보 없음";
         if (data.gender) {
             const gender = data.gender.toUpperCase();
-            if (gender === "M") genderDisplay = "남성";
-            else if (gender === "F") genderDisplay = "여성";
+            if (gender === "male") genderDisplay = "남성";
+            else if (gender === "female") genderDisplay = "여성";
             else genderDisplay = data.gender;
         }
         document.querySelector(".info-value.gender").textContent = genderDisplay;
@@ -265,4 +265,5 @@ async function loadUserInfo() {
 // =========================================
 // 6. 초기화 및 실행
 // =========================================
+
 
