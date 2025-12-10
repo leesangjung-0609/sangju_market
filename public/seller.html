@@ -5,42 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>판매자 정보 - Re:Born</title>
   <link rel="stylesheet" href="style.css" />
+  <script src="seller_info.js" defer></script>
 </head>
-<body class="loading-screen">
-  <script src="seller.js"></script>
-
+<body>
   <nav>
     <div class="logo">
       <a href="main.html">Re:Born</a>
     </div>
-    <div class="search-bar">
-      <div class="search-container">
-        <input type="text" id="searchInput" placeholder="상품명, 카테고리 검색..." oninput="showHideClearButton()" />
-        <button class="clear-btn" id="clearBtn" onclick="clearSearchInput()" style="display: none;">&times;</button>
-      </div>
-    </div>
-    <ul class="menu">
-      <li id="mypageMenu">
-        <a href="#">마이 페이지</a>
-        <ul class="submenu" style="left: -30px;">
-          <li><a href="my_info.html">내 정보</a></li>
-          <li><a href="goods_reg.html">등록한 상품 목록</a></li>
-          <li><a href="rating.html">후기 / 평점</a></li>
-          <li><a href="javascript:void(0);" onclick="openWithdrawPopup()">탈퇴하기</a></li>
-        </ul>
-      </li>
-      <li id="authMenu">
-        <a href="#" id="authLink">로그인/회원가입</a>
-        <ul class="submenu" id="authSubmenu">
-          <li><a href="login.html">로그인</a></li>
-          <li><a href="signup.html">회원가입</a></li>
-        </ul>
-      </li>
-    </ul>
   </nav>
 
   <main class="container">
-    <section id="user-info" class="page-section">
+    <section id="seller-info" class="page-section">
       <h2>판매자 정보</h2>
       <div class="profile-container">
         <img src="https://via.placeholder.com/100" alt="판매자 프로필" class="profile-avatar">
@@ -54,52 +29,28 @@
             <span class="info-value phone"></span>
           </div>
           <div class="info-row">
-            <span class="info-label">생일</span>
-            <span class="info-value birth"></span>
+            <span class="info-label">성별</span>
+            <span class="info-value gender"></span>
           </div>
         </div>
       </div>
-      </section>
+    </section>
 
     <section class="history-section">
       <h3>판매중인 상품</h3>
-      <div class="card-grid" id="selling-list">
-      </div>
+      <div class="card-grid" id="selling-list"></div>
     </section>
 
     <section class="history-section">
       <h3>판매 내역</h3>
-      <div class="card-grid" id="sales-list">
-      </div>
+      <div class="card-grid" id="sales-list"></div>
     </section>
 
     <section class="history-section">
       <h3>구매 내역</h3>
-      <div class="card-grid" id="purchase-list">
-      </div>
+      <div class="card-grid" id="purchase-list"></div>
     </section>
   </main>
-  
-  <script src="login_out.js"></script>
-  <script>
-    // 기존 검색 및 팝업 UI 로직 유지
-    function openWithdrawPopup() {
-        // 탈퇴는 본인만 가능하므로 판매자 페이지에서는 버튼을 숨기거나 기능을 막는 것이 좋지만,
-        // 일단 UI 스크립트는 유지합니다. (실제 버튼은 상단 메뉴에만 존재)
-    }
 
-    function clearSearchInput() {
-      const searchInput = document.getElementById('searchInput');
-      searchInput.value = '';
-      showHideClearButton();
-      searchInput.focus();
-    }
-
-    function showHideClearButton() {
-      const searchInput = document.getElementById('searchInput');
-      const clearBtn = document.getElementById('clearBtn');
-      clearBtn.style.display = searchInput.value.length > 0 ? 'block' : 'none';
-    }
-  </script>
 </body>
 </html>
