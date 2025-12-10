@@ -4,73 +4,130 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Re:Born - 내 정보 수정</title>
+  <title>내 정보 수정 - Re:Born</title>
   <link rel="stylesheet" href="style.css" />
   <style>
-    .form-group {
-      margin-bottom: 20px;
+    /* [핵심 1] 모든 요소의 크기 계산을 '테두리 포함'으로 변경 (가로 스크롤 방지 필수) */
+    * {
+      box-sizing: border-box;
     }
 
+    /* [핵심 2] 레이아웃 초기화 및 여백 제거 */
+    body {
+      background-color: #fff;
+      /* 위쪽 여백 5px, 양옆/아래 20px */
+      padding: 5px 20px 20px 20px !important; 
+      margin: 0 !important;
+      overflow-x: hidden; /* 가로 스크롤 절대 금지 */
+      width: 100%;
+    }
+    
+    .container {
+      width: 100%;
+      max-width: 100%;
+      margin: 0 !important;
+      padding: 0 !important;
+      box-shadow: none;
+    }
+
+    .page-section {
+      padding: 0 !important;
+      margin: 0 !important;
+      border: none;
+      box-shadow: none;
+    }
+
+    /* 제목 위쪽 여백 강제 제거 */
+    h2 {
+      margin-top: 10px !important; /* 창 위쪽과 아주 약간의 간격만 유지 */
+      margin-bottom: 20px;
+      padding-top: 0 !important;
+      text-align: center;
+      font-size: 22px;
+    }
+
+    /* 폼 요소 간격 */
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      font-size: 14px;
+      color: #333;
+    }
+
+    /* 입력창 디자인 */
+    .form-group input:not([type="radio"]) {
+      width: 100%; /* box-sizing 덕분에 100%여도 안전함 */
+      padding: 10px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+      height: 40px;
+    }
+
+    /* 읽기 전용 필드 */
+    .form-group input[readonly] {
+      background-color: #f5f5f5;
+      color: #666;
+      border: 1px solid #eee;
+    }
+
+    /* 성별 선택 */
     .gender-container {
       display: flex;
       gap: 20px;
-      margin-top: 10px;
+      margin-top: 5px;
+      align-items: center;
+      height: 40px;
     }
 
     .gender-container label {
       display: flex;
       align-items: center;
       font-weight: normal;
+      cursor: pointer;
+      margin-bottom: 0;
     }
 
     .gender-container input[type="radio"] {
       margin-right: 5px;
+      width: auto;
+    }
+
+    /* 버튼 스타일 */
+    .btn-primary {
+      width: 100%;
+      padding: 12px;
+      background-color: #2b6cb0;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    
+    .btn-primary:hover {
+      background-color: #1a416b;
     }
   </style>
 </head>
 
-<body class="loading-screen">
-  <script src="login_out.js"></script>
-  <nav>
-    <div class="logo">
-      <a href="main.html">Re:Born</a>
-    </div>
-
-    <div class="search-bar">
-      <div class="search-container">
-        <input type="text" id="searchInput" placeholder="상품명, 카테고리 검색..." oninput="showHideClearButton()" />
-        <button class="clear-btn" id="clearBtn" onclick="clearSearchInput()" style="display: none;">&times;</button>
-      </div>
-    </div>
-
-    <ul class="menu">
-      <li id="mypageMenu">
-        <a href="#">마이 페이지</a>
-        <ul class="submenu" style="left: -30px;">
-          <li><a href="my_info.html">내 정보</a></li>
-          <li><a href="goods_reg.html">등록한 상품 목록</a></li>
-          <li><a href="rating.html">후기</a></li>
-          <li><a href="javascript:void(0);" onclick="openWithdrawPopup()">탈퇴하기</a></li>
-        </ul>
-      </li>
-
-      <li id="authMenu">
-        <a href="#" id="authLink">로그인/회원가입</a>
-        <ul class="submenu" id="authSubmenu">
-          <li><a href="login.html">로그인</a></li>
-          <li><a href="signup.html">회원가입</a></li>
-        </ul>
-      </li>
-    </ul>
-  </nav>
-
+<body>
   <main class="container">
     <section id="my-info" class="page-section">
       <h2>내 정보 수정</h2>
       <form id="updateForm">
         <div class="form-group">
           <label for="user-id">아이디</label>
-          <input type="text" id="user-id" readonly /> </div>
+          <input type="text" id="user-id" readonly /> 
+        </div>
+        
         <div class="form-group">
           <label for="nickname">닉네임</label>
           <input type="text" id="nickname" placeholder="닉네임" required />
@@ -80,14 +137,17 @@
           <label for="email">이메일</label>
           <input type="email" id="email" required />
         </div>
+        
         <div class="form-group">
           <label for="phone">전화번호</label>
           <input type="tel" id="phone" placeholder="- 없이 입력" />
         </div>
+        
         <div class="form-group">
           <label for="birth">생년월일</label>
           <input type="date" id="birth" required />
         </div>
+        
         <div class="form-group">
           <label>성별</label>
           <div class="gender-container">
@@ -96,51 +156,30 @@
             <label><input type="radio" name="gender" value="other" id="gender-other"> 기타</label>
           </div>
         </div>
-        <hr style="border: 0; border-top: 1px solid #eee; margin: 30px 0;">
+        
+        <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
 
         <div class="form-group">
           <label for="current-pw">현재 비밀번호</label>
           <input type="password" id="current-pw" placeholder="정보 수정을 위해 현재 비밀번호를 입력해주세요" required />
         </div>
+        
         <div class="form-group">
           <label for="new-pw">새 비밀번호 (선택)</label>
           <input type="password" id="new-pw" placeholder="변경하지 않으려면 비워두세요" />
         </div>
+        
         <div class="form-group">
           <label for="new-pw-confirm">새 비밀번호 확인</label>
           <input type="password" id="new-pw-confirm" placeholder="새 비밀번호를 다시 입력" />
         </div>
-        <button type="submit" class="btn btn-primary">정보 수정하기</button>
+        
+        <button type="submit" class="btn btn-primary">수정 완료</button>
       </form>
     </section>
   </main>
 
   <script>
-    // --- 유틸리티 함수 (기존 로직 유지) ---
-    function openWithdrawPopup() {
-      const popupWidth = 500;
-      const popupHeight = 650;
-      const left = (window.screen.width / 2) - (popupWidth / 2);
-      const top = (window.screen.height / 2) - (popupHeight / 2);
-      const options = `width=${popupWidth},height=${popupHeight},left=${left},top=${top},status=no,menubar=no,toolbar=no,resizable=no`;
-      window.open("withdraw.html", "withdrawPopup", options);
-    }
-    function clearSearchInput() {
-      const searchInput = document.getElementById('searchInput');
-      searchInput.value = '';
-      showHideClearButton();
-      searchInput.focus();
-    }
-    function showHideClearButton() {
-      const searchInput = document.getElementById('searchInput');
-      const clearBtn = document.getElementById('clearBtn');
-      if (searchInput.value.length > 0) {
-        clearBtn.style.display = 'block';
-      } else {
-        clearBtn.style.display = 'none';
-      }
-    }
-
     // --- [핵심 기능 1] 사용자 정보 불러오기 ---
     async function loadUserInfoForEdit() {
       try {
@@ -148,25 +187,19 @@
         
         if (!res.ok) {
           alert("로그인이 필요하거나 정보를 불러올 수 없습니다.");
-          window.location.href = "login.html";
+          window.close();
           return;
         }
 
         const data = await res.json();
         
-        // 폼 필드에 값 채우기
-        // name 필드는 닉네임(nickname)으로 사용한다고 가정했습니다.
+        // 폼 필드 채우기
         document.getElementById('user-id').value = data.username || '';
         document.getElementById('nickname').value = data.name || ''; 
         document.getElementById('email').value = data.email || '';
-        
-        // 전화번호 포맷 제거 ('-' 제거)
         document.getElementById('phone').value = data.phone ? data.phone.replace(/-/g, '') : '';
-        
-        // 생년월일 (YYYY-MM-DD 형식으로 가정)
         document.getElementById('birth').value = data.birth || ''; 
         
-        // 성별 라디오 버튼 체크 (대소문자 상관없이 처리)
         if (data.gender) {
           const genderValue = data.gender.toLowerCase();
           const genderRadio = document.getElementById(`gender-${genderValue}`);
@@ -177,9 +210,8 @@
 
       } catch (err) {
         console.error("사용자 정보 로드 오류:", err);
-        alert("서버와 통신에 문제가 발생하여 정보를 불러올 수 없습니다.");
-      } finally {
-        document.body.classList.remove('loading-screen');
+        alert("서버 통신 오류가 발생했습니다.");
+        window.close();
       }
     }
 
@@ -197,7 +229,7 @@
       }
       
       const updateData = {
-        name: document.getElementById('nickname').value, // name 필드 사용
+        name: document.getElementById('nickname').value,
         email: document.getElementById('email').value,
         phone: document.getElementById('phone').value,
         birth: document.getElementById('birth').value,
@@ -210,7 +242,6 @@
       }
       
       try {
-        // 서버에 정보 수정 요청 (PATCH /user/info 엔드포인트 사용)
         const res = await fetch("/user/info", {
           method: 'PATCH', 
           headers: { 'Content-Type': 'application/json' },
@@ -220,7 +251,10 @@
 
         if (res.ok) {
           alert("정보가 성공적으로 수정되었습니다.");
-          window.location.href = "my_info.html"; // 정보 조회 페이지로 이동
+          if (window.opener && !window.opener.closed) {
+            window.opener.location.reload();
+          }
+          window.close(); 
         } else {
           const errorText = await res.text();
           console.error("정보 수정 실패:", errorText);
@@ -233,11 +267,9 @@
       }
     });
 
-    // 페이지 로드 시 사용자 정보 불러오기
     document.addEventListener("DOMContentLoaded", () => {
       loadUserInfoForEdit(); 
     });
   </script>
 </body>
-
 </html>
