@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>내 정보 - Re:Born</title>
+  <link rel="stylesheet" href="style.css" />
+
+</head>
+
+<body class="loading-screen">
+  <script src="my_info.js"></script>
+  <script src="login_out.js"></script>
+  <nav>
+    <div class="logo">
+      <a href="main.html">Re:Born</a>
+    </div>
+
+    <div class="search-bar">
+      <div class="search-container">
+        <input type="text" id="searchInput" placeholder="상품명, 카테고리 검색..." oninput="showHideClearButton()" />
+        <button class="clear-btn" id="clearBtn" onclick="clearSearchInput()" style="display: none;">&times;</button>
+      </div>
+    </div>
+
+    <ul class="menu">
+      <li id="mypageMenu">
+        <a href="#">마이 페이지</a>
+        <ul class="submenu" style="left: -30px;">
+          <li><a href="my_info.html">내 정보</a></li>
+          <li><a href="goods_reg.html">등록한 상품 목록</a></li>
+          <li><a href="rating.html">후기</a></li>
+          <li><a href="javascript:void(0);" onclick="openWithdrawPopup()">탈퇴하기</a></li>
+        </ul>
+      </li>
+
+      <li id="authMenu">
+        <a href="#" id="authLink">로그인/회원가입</a>
+        <ul class="submenu" id="authSubmenu">
+          <li><a href="login.html">로그인</a></li>
+          <li><a href="signup.html">회원가입</a></li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+
+  <main class="container">
+    <section id="user-info" class="page-section">
+      <h2>내 정보</h2>
+
+      <div class="profile-container">
+        <div class="info-display">
+
+          <div class="info-row">
+            <span class="info-label">아이디</span>
+            <span class="info-value id"></span>
+          </div>
+
+          <div class="info-row">
+            <span class="info-label">닉네임</span>
+            <span class="info-value nickname"></span>
+          </div>
+
+          <div class="info-row">
+            <span class="info-label">이메일</span>
+            <span class="info-value email"></span>
+          </div>
+
+          <div class="info-row">
+            <span class="info-label">전화번호</span>
+            <span class="info-value phone"></span>
+          </div>
+
+          <div class="info-row">
+            <span class="info-label">생년월일</span>
+            <span class="info-value birth"></span>
+          </div>
+
+          <div class="info-row">
+            <span class="info-label">성별</span>
+            <span class="info-value gender"></span>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="button-container">
+        <a href="my_info_edit.html" class="btn btn-primary">정보 수정하기</a>
+      </div>
+    </section>
+
+    <section id="wishlist" class="history-section">
+      <h3>찜 목록</h3>
+      <div class="card-grid" id="wishlist-display">
+      </div>
+    </section>
+
+    <section class="history-section">
+      <h3>판매중인 상품</h3>
+      <div class="card-grid" id="selling-list">
+      </div>
+    </section>
+
+    <section class="history-section">
+      <h3>판매 내역</h3>
+      <div class="card-grid" id="sales-list">
+      </div>
+    </section>
+
+    <section class="history-section">
+      <h3>구매 내역</h3>
+      <div class="card-grid" id="purchase-list">
+      </div>
+    </section>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+    // 1. 사용자 정보 로드 및 표시
+    loadUserInfo();
+
+    // 2. 찜 목록 가져오기
+    loadDataAndRender('/wishlist/list', 'wishlist-display', 'wishlist');
+
+    // 3. 판매중 목록 가져오기
+    loadDataAndRender('/product/selling/active', 'selling-list', 'selling');
+
+    // 4. 판매 완료 목록 가져오기 (라우터 구현 완료)
+    loadDataAndRender('/product/sold', 'sales-list', 'sold');
+
+    // 5. 구매 목록 가져오기 (라우터 구현 완료)
+    loadDataAndRender('/product/bought', 'purchase-list', 'bought');
+});
+  </script>
+  
+
+</body>
+
+</html>
