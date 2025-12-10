@@ -117,6 +117,14 @@
           style="padding:12px 20px; background:#e74c3c; color:white; border:none; border-radius:6px; font-size:16px; cursor:pointer;">
           ♥ 좋아요
         </button>
+
+        <!-- 후기 작성 버튼 추가 ,이부분은 추가된거임-->
+        <button id="reviewWriteBtn"
+          style="padding:12px 20px; background:#27ae60; color:white; border:none; border-radius:6px; font-size:16px; cursor:pointer;">
+          후기 작성
+        </button>
+
+
         <button id="editBtn"
           style="padding:12px 25px; background:#2980b9; color:white; border:none; border-radius:6px; font-size:16px; cursor:pointer; display:none;">수정하기</button>
       </div>
@@ -429,6 +437,18 @@ async function loadProduct() {
       loadProduct();           // 상품 정보 로드
       loadComments();          // 댓글 로드
     })();
+
+
+   // 6. 후기작성으로 옮겨가는페이지 관련 자바스크립트 함수작성  
+      document.getElementById("reviewWriteBtn").addEventListener("click", () => {
+    const params = new URLSearchParams(window.location.search);
+    const productId = params.get("id");
+
+    if (!productId) return alert("상품 정보를 불러올 수 없습니다.");
+
+    window.location.href = `review_write.html?id=${productId}`;
+  });
+
 
   </script>
 
