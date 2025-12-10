@@ -263,33 +263,33 @@
         alert("서버 통신 오류로 판매완료 처리에 실패했습니다.");
       }
     }
-    // 찜 상태 확인 및 버튼 초기화
-    async function checkAndSetupLikeButton(productId) {
-      if (!currentUser) {
-        likeBtn.onclick = () => alert("로그인이 필요합니다.");
-        return;
-      }
+   // ================================
+// 🔥 현재 상품의 찜 상태 가져오고 버튼 초기화
+// ================================
+async function checkAndSetupLikeButton(productId) {
+  if (!currentUser) {
+    likeBtn.onclick = () => alert("로그인이 필요합니다.");
+    return;
+  }
 
-      try {
-        // 백엔드: GET /wishlist/check/:productId
-        const res = await fetch(`/wishlist/check/${productId}`, {
-          credentials: "include"
-        });
-        const {
-          isWished
-        } = await res.json();
+  try {
+    const res = await fetch(`/wishlist/check/${productId}`, {
+      credentials: "include"
+    });
 
-        // 초기 버튼 UI 설정
-        updateLikeButtonUI(isWished);
+    const { isWished } = await res.json();
 
-        // 버튼 클릭 이벤트 설정 (찜 토글)
-        likeBtn.onclick = () => toggleWishlist(productId, isWished);
+    // UI 반영
+    updateLikeButtonUI(isWished);
 
-      } catch (err) {
-        console.error("찜 상태 확인 실패:", err);
-        likeBtn.onclick = () => alert("찜 상태 로드 실패");
-      }
-    }
+    // 클릭 시 토글되도록 설정
+    likeBtn.onclick = () => toggleWishlist(productId);
+
+  } catch (err) {
+    console.error("찜 상태 확인 실패:", err);
+    likeBtn.onclick = () => alert("찜 상태 로드 실패");
+  }
+}
 
     // 찜 버튼 UI 업데이트 (색상/텍스트 변경)
     function updateLikeButtonUI(isWished) {
@@ -302,38 +302,43 @@
       }
     }
 
-    // 찜 추가/삭제 토글 로직
-    async function toggleWishlist(productId, currentStatus) {
-      likeBtn.disabled = true; // 중복 클릭 방지
+   // ================================
+// 🔥 찜 토글 기능 (현재 상태를 서버에서 다시 받아옴)
+// ================================
+async function toggleWishlist(productId) {
+  likeBtn.disabled = true;
 
-      try {
-        const method = currentStatus ? "DELETE" : "POST";
-        const url = currentStatus ? "/wishlist/remove" : "/wishlist/add";
+  try {
+    // 현재 상태 다시 가져오기
+    const checkRes = await fetch(`/wishlist/check/${productId}`, {
+      credentials: "include"
+    });
+    const { isWished } = await checkRes.json();
 
-        const res = await fetch(url, {
-          method: method,
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            productId: productId
-          }),
-          credentials: "include"
-        });
+    // 요청 타입 결정
+    const method = isWished ? "DELETE" : "POST";
+    const url = isWished ? "/wishlist/remove" : "/wishlist/add";
 
-        const result = await res.json();
-        alert(result.message);
+    const res = await fetch(url, {
+      method: method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ productId }),
+      credentials: "include"
+    });
 
-        // UI를 갱신하여 최신 상태를 반영합니다.
-        await checkAndSetupLikeButton(productId);
+    const result = await res.json();
+    alert(result.message);
 
-      } catch (err) {
-        console.error("찜 토글 오류:", err);
-        alert("찜 기능 처리 중 오류가 발생했습니다.");
-      } finally {
-        likeBtn.disabled = false;
-      }
-    }
+    // ⭐ 상태 반영 (다시 확인 후 UI 갱신)
+    await checkAndSetupLikeButton(productId);
+
+  } catch (err) {
+    console.error("찜 토글 오류:", err);
+    alert("찜 기능 처리 중 오류");
+  } finally {
+    likeBtn.disabled = false;
+  }
+}
 
     // 상품 상세 정보 불러오기
     async function loadProduct() {
