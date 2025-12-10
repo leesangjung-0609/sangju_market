@@ -1,7 +1,7 @@
-// my_info.js (수정된 최종 버전)
+// my_info.js (최종 통합 및 정리 버전 - 수정 완료)
 
 // =========================================
-// 1. HTML 템플릿 생성 함수 (수정 없음)
+// 1. HTML 템플릿 생성 함수
 // =========================================
 /**
  * 반복되는 카드 HTML 코드를 생성해줍니다.
@@ -12,7 +12,14 @@ function createCardHTML(item, type) {
     let imgUrl = item.image_url || item.img || 'https://via.placeholder.com/220x180?text=No+Image';
     let title = item.title;
     let price = item.price;
+
     let displayDate = item.created_at || item.date;
+
+    // ✅ 날짜 형식 YYYY-MM-DD 변환
+    if (displayDate) {
+        // created_at 필드는 ISO 형식(T 포함)으로 오므로, T를 기준으로 split합니다.
+        displayDate = new Date(displayDate).toISOString().split("T")[0];
+    }
 
     if (type === 'sold') dateLabel = "판매일";
     if (type === 'bought') dateLabel = "구매일";
@@ -22,8 +29,36 @@ function createCardHTML(item, type) {
 
     let buttonHtml = '';
     if (type === 'wishlist') {
+        // wishlist_id를 사용하여 찜 삭제 버튼 생성
         buttonHtml = `<button class="btn btn-danger btn-remove-wish" data-id="${item.wishlist_id}">찜 삭제</button>`;
     }
+    else if (type === 'bought') {
+        // 구매 내역일 경우 후기 작성 버튼 추가
+        buttonHtml = `<a href="review_write.html?product_id=${linkId}" class="btn btn-primary btn-write-review">후기 작성</a>`;
+    }
+    // 판매자/구매자 정보 표시
+    let partnerInfo = '';
+    if (type === 'sold' && item.buyer_name) {
+        partnerInfo = `<p class="partner">구매자: ${item.buyer_name}</p>`;
+    } else if (type === 'bought' && item.seller_name) {
+        partnerInfo = `<p class="partner">판매자: ${item.seller_name}</p>`;
+    } else if (type === 'wishlist' && item.seller_name) {
+        partnerInfo = `<p class="seller">판매자: ${item.seller_name}</p>`;
+    }
+    
+    // ⭐⭐ [수정된 부분] 상태 뱃지 추가 로직 ⭐⭐
+    let statusBadge = '';
+    if (item.status) {
+        if (item.status === '판매완료') {
+            statusBadge = `<span class="status-badge sold-status">판매완료</span>`;
+        } else if (item.status === '판매중') {
+            statusBadge = `<span class="status-badge active-status">판매중</span>`;
+        } else if (item.status === '예약중') {
+            statusBadge = `<span class="status-badge reserved-status">예약중</span>`;
+        }
+    }
+    // ⭐⭐ ----------------------------------- ⭐⭐
+
 
     return `
         <div class="product-card ${type === 'wishlist' ? 'wishlist-card' : ''}">
@@ -31,8 +66,9 @@ function createCardHTML(item, type) {
             <img src="${imgUrl}" alt="${title}" onerror="this.src='https://via.placeholder.com/220x180?text=No+Image'">
             <div class="card-content">
               <h4>${title}</h4> <p class="price">${formattedPrice}원</p>
+              ${partnerInfo}
               ${type !== 'wishlist' ? `<p class="date">${dateLabel}: ${displayDate}</p>` : ''}
-              ${type === 'wishlist' && item.seller_name ? `<p class="seller">판매자: ${item.seller_name}</p>` : ''}
+              ${statusBadge} 
             </div>
           </a>
           ${buttonHtml}
@@ -41,7 +77,7 @@ function createCardHTML(item, type) {
 }
 
 // =========================================
-// 2. 화면에 렌더링하는 함수 (수정됨: 찜 목록 삭제 로직 추가)
+// 2. 화면에 렌더링하는 함수 (찜 목록 삭제 로직 포함)
 // =========================================
 /**
  * 렌더링 실행 함수
@@ -53,7 +89,13 @@ function renderList(containerId, dataList, type) {
     container.innerHTML = '';
 
     if (dataList.length === 0) {
-        container.innerHTML = '<p style="padding: 20px; color: #888;">내역이 없습니다.</p>';
+        let emptyMessage = "내역이 없습니다.";
+        if (type === 'selling') emptyMessage = "현재 판매중인 상품이 없습니다.";
+        else if (type === 'sold') emptyMessage = "판매를 완료한 상품이 없습니다.";
+        else if (type === 'bought') emptyMessage = "구매를 완료한 상품이 없습니다.";
+        else if (type === 'wishlist') emptyMessage = "찜 목록이 비어 있습니다.";
+
+        container.innerHTML = `<p style="padding: 20px; color: #888;">${emptyMessage}</p>`;
         return;
     }
 
@@ -79,7 +121,7 @@ function renderList(containerId, dataList, type) {
                         if (res.ok) {
                             e.target.closest('.product-card').remove(); // 카드 삭제
                             alert('찜 목록에서 삭제되었습니다.');
-                            // 찜 목록이 비었는지 확인하고 메시지 업데이트 로직 추가 가능
+                            // 렌더링 후 빈 목록인지 다시 확인하는 로직은 복잡해지므로, 새로고침을 유도하거나, 서버 응답이 성공하면 dataList에서 해당 항목을 제거 후 다시 렌더링하는 것이 좋습니다.
                         } else {
                             alert('찜 삭제 실패: 서버 오류');
                         }
@@ -94,7 +136,7 @@ function renderList(containerId, dataList, type) {
 }
 
 // =========================================
-// 3. 서버 데이터 로드 함수 (수정됨: 401이면 묻지도 따지지도 않고 쫓아내기)
+// 3. 서버 데이터 로드 함수 (401 로그인 만료 처리 포함)
 // =========================================
 async function loadDataAndRender(endpoint, containerId, type) {
     const container = document.getElementById(containerId);
@@ -102,21 +144,20 @@ async function loadDataAndRender(endpoint, containerId, type) {
 
     // 로딩 중 표시
     container.innerHTML = '<p style="padding: 20px; color: #888;">데이터를 불러오는 중...</p>';
-    
+
     try {
         const res = await fetch(endpoint, { credentials: "include" });
 
-        // ▼▼▼ 여기가 핵심 수정 사항입니다 ▼▼▼
-        // 서버가 "너 로그인 안 했어(401)"라고 하면
+        // 401 로그인 만료 처리
         if (res.status === 401) {
             alert("로그인이 만료되었습니다. 다시 로그인해주세요.");
             window.location.href = "login.html"; // 로그인 페이지로 강제 이동
-            return; // 함수 여기서 즉시 종료 (밑에 빨간 글씨 코드 실행 안 됨)
+            return;
         }
-        // ▲▲▲ 수정 끝 ▲▲▲
 
         if (!res.ok) {
-            if (endpoint === '/wishlist/list') { 
+            // 찜 목록 라우터 미구현 시 처리
+            if (endpoint === '/wishlist/list') {
                 container.innerHTML = `<p style="padding: 20px; color: #888;">찜 목록 라우터가 구현되지 않았습니다.</p>`;
                 return;
             }
@@ -124,21 +165,54 @@ async function loadDataAndRender(endpoint, containerId, type) {
         }
 
         const data = await res.json();
-        renderList(containerId, data, type);
+        // 데이터가 배열이 아닌 경우 (예: 서버에서 단일 객체만 보낸 경우) 대비
+        const dataList = Array.isArray(data) ? data : (data ? [data] : []);
+
+        renderList(containerId, dataList, type);
 
     } catch (error) {
         console.error(`[${containerId}] 데이터 로드 오류:`, error);
-        // 네트워크 에러 등이 났을 때만 빨간 글씨 표시
-        container.innerHTML = `<p style="padding: 20px; color: red;">데이터를 불러오는 데 실패했습니다.</p>`;
+        // 네트워크 오류 등 심각한 오류 시
+        container.innerHTML = `<p style="padding: 20px; color: red;">데이터를 불러오는 데 실패했습니다. (콘솔 확인)</p>`;
     }
 }
 
 // =========================================
-// 4. 초기화 및 실행
+// 4. HTML 유틸리티 함수 (my_info.html의 인라인 스크립트에서 이동)
+// =========================================
+
+function openWithdrawPopup() {
+    const popupWidth = 500;
+    const popupHeight = 650;
+    const left = window.screen.width / 2 - popupWidth / 2;
+    const top = window.screen.height / 2 - popupHeight / 2;
+
+    window.open(
+        "withdraw.html",
+        "withdrawPopup",
+        `width=${popupWidth},height=${popupHeight},left=${left},top=${top},status=no,menubar=no,toolbar=no,resizable=no`
+    );
+}
+
+function clearSearchInput() {
+    const searchInput = document.getElementById("searchInput");
+    searchInput.value = "";
+    showHideClearButton();
+    searchInput.focus();
+}
+
+function showHideClearButton() {
+    const searchInput = document.getElementById("searchInput");
+    const clearBtn = document.getElementById("clearBtn");
+    clearBtn.style.display = searchInput.value.length > 0 ? "block" : "none";
+}
+
+// =========================================
+// 5. 사용자 정보 로드 및 표시
 // =========================================
 
 /**
- * 서버에서 현재 로그인된 사용자 정보를 가져옵니다. (my_info.html 상단 정보 채우기)
+ * 서버에서 현재 로그인된 사용자 정보를 가져옵니다.
  */
 async function loadUserInfo() {
     try {
@@ -151,16 +225,35 @@ async function loadUserInfo() {
         if (!res.ok) throw new Error("정보를 불러오는 데 실패했습니다.");
         const data = await res.json();
 
-        // 아이디, 이름 표시
+        // 아이디, 닉네임, 이메일 표시
         document.querySelector(".info-value.id").textContent = data.username || "정보 없음";
         document.querySelector(".info-value.nickname").textContent = data.name || "정보 없음";
+        document.querySelector(".info-value.email").textContent = data.email || "정보 없음";
 
-        const birthInput = document.getElementById("birth-input");
+        // 전화번호 형식 지정 (XXX-XXXX-XXXX)
+        const formattedPhone = data.phone
+            ? data.phone.replace(/(\d{3})(\d{4})(\d{4})/, "$1-$2-$3")
+            : "정보 없음";
+        document.querySelector(".info-value.phone").textContent = formattedPhone;
 
-        // DB에서 "1999-01-30" 문자열이 옴 -> input도 "1999-01-30"을 원함 -> 환상의 짝꿍
-        if (birthInput && data.birthdate) {
-            birthInput.value = data.birthdate;
+        // 생년월일 형식 지정
+        const rawBirth = data.birthdate || data.birth;
+        const formattedBirth = rawBirth
+            ? rawBirth
+                .replace(/(\d{4})-(\d{2})-(\d{2})/, "$1.$2.$3")
+                .replace(/(\d{4})(\d{2})(\d{2})/, "$1.$2.$3")
+            : "정보 없음";
+        document.querySelector(".info-value.birth").textContent = formattedBirth;
+
+        // 성별 표시
+        let genderDisplay = "정보 없음";
+        if (data.gender) {
+            const gender = data.gender.toUpperCase();
+            if (gender === "M") genderDisplay = "남성";
+            else if (gender === "F") genderDisplay = "여성";
+            else genderDisplay = data.gender;
         }
+        document.querySelector(".info-value.gender").textContent = genderDisplay;
 
     } catch (err) {
         console.error("내 정보 로드 실패:", err);
@@ -169,20 +262,7 @@ async function loadUserInfo() {
 }
 
 
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. 사용자 정보 로드 및 표시
-    loadUserInfo();
+// =========================================
+// 6. 초기화 및 실행
+// =========================================
 
-    // 2. 찜 목록 가져오기 (GET /wishlist/list 또는 /wishlist 사용)
-    // 찜 목록 라우터는 GET /wishlist/list를 사용하도록 가정합니다.
-    loadDataAndRender('/wishlist/list', 'wishlist-display', 'wishlist'); // 👈 ID를 'wishlist-display'로 변경
-
-    // 3. 판매중 목록 가져오기
-    loadDataAndRender('/product/selling/active', 'selling-list', 'selling');
-
-    // 4. 판매 완료 목록 가져오기 (백엔드 /product/sold 라우터 구현 필요)
-    loadDataAndRender('/product/sold', 'sales-list', 'sold');
-
-    // 5. 구매 목록 가져오기 (백엔드 /product/bought 라우터 구현 필요)
-    loadDataAndRender('/product/bought', 'purchase-list', 'bought');
-});

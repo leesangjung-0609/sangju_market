@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>후기 작성 - Re:Born</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #f3f7ff;
+            font-family: "Noto Sans KR", sans-serif;
+        }
+
+        /* 상단 네비처럼 파란색 */
+        .header {
+            width: 100%;
+            background-color: #3a86ff;
+            color: white;
+            padding: 18px;
+            font-size: 22px;
+            font-weight: bold;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+        }
+
+        .container {
+            width: 90%;
+            max-width: 520px;
+            background: #fff;
+            margin: 30px auto;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+        }
+
+        .info-box {
+            background: #eef4ff;
+            border-left: 5px solid #3a86ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .label {
+            margin-top: 15px;
+            font-weight: bold;
+            color: #1f3c88;
+            margin-bottom: 8px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 12px;
+            font-size: 15px;
+            border: 1px solid #c8d6ff;
+            border-radius: 8px;
+            outline: none;
+            box-sizing: border-box;
+            height: 150px;
+            resize: none;
+        }
+
+        textarea:focus {
+            border: 1.5px solid #3a86ff;
+            box-shadow: 0 0 6px rgba(58, 134, 255, 0.4);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 13px;
+            border: none;
+            border-radius: 10px;
+            font-size: 17px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 18px;
+            transition: 0.15s;
+            color: white;
+        }
+
+        .btn-submit {
+            background-color: #3a86ff;
+        }
+        .btn-submit:hover {
+            background-color: #2b6bd6;
+        }
+
+        .btn-back {
+            background-color: #495057;
+        }
+        .btn-back:hover {
+            background-color: #3b444b;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">후기 작성</div>
+
+<div class="container">
+
+    <div class="info-box">
+        <p><strong>상품명:</strong> <span id="productTitle"></span></p>
+        <p><strong>판매자:</strong> <span id="sellerName"></span></p>
+    </div>
+
+    <div class="label">후기 내용</div>
+    <textarea id="content" placeholder="상품을 사용한 후기를 자유롭게 작성해주세요."></textarea>
+
+    <button class="btn btn-submit" onclick="submitReview()">후기 등록</button>
+    <button class="btn btn-back" onclick="history.back()">뒤로가기</button>
+
+</div>
+
+<script>
+    // URL 파라미터 읽기
+    const params = new URLSearchParams(window.location.search);
+    // my_info.js에서 product_id를 넘겼으므로, 이 이름으로 가져옵니다.
+    const productId = params.get("product_id"); 
+    
+    // 이 두 값은 my_info.js에서 넘겨주지 않았으므로 (필요하다면 my_info.js 수정 필요)
+    // 현재는 placeholder 처리하거나 서버에서 가져오는 것이 일반적입니다.
+    // 여기서는 일단 기존 코드를 유지하고, 서버에서 상품 정보를 가져오는 로직을 추가합니다.
+    
+    document.getElementById("productTitle").innerText = "상품 정보 로딩 중...";
+    document.getElementById("sellerName").innerText = "판매자 정보 로딩 중...";
+
+
+    // **[추가]** 상품 정보 로드 함수 (실제 서버 엔드포인트 필요)
+    async function loadProductInfo() {
+        if (!productId) {
+            document.getElementById("productTitle").innerText = "상품 ID 누락";
+            document.getElementById("sellerName").innerText = "정보 없음";
+            alert("상품 ID가 없어 후기 작성을 시작할 수 없습니다.");
+            return;
+        }
+
+        try {
+            // [가정] 상품 상세 정보를 가져오는 서버 엔드포인트
+            const res = await fetch(`/product/${productId}`, { credentials: "include" }); 
+            if (res.status === 401) {
+                alert("로그인 후 이용해주세요.");
+                window.close();
+                return;
+            }
+            if (!res.ok) throw new Error("상품 정보를 불러오지 못했습니다.");
+            
+            const product = await res.json();
+            
+            // ⭐⭐⭐ [수정] 상품 상세 페이지(product_detail.html)에서 사용한 'product.username'을 사용합니다.
+            document.getElementById("productTitle").innerText = product.title || "상품명 없음";
+            document.getElementById("sellerName").innerText = product.username || "판매자 없음"; 
+            
+        } catch (error) {
+            console.error("상품 정보 로드 오류:", error);
+            document.getElementById("productTitle").innerText = "로드 실패";
+            document.getElementById("sellerName").innerText = "로드 실패";
+        }
+    }
+
+    // 페이지 로드 시 상품 정보 로드 실행
+    loadProductInfo(); 
+
+    function submitReview() {
+        const content = document.getElementById("content").value.trim();
+
+        if (!content) {
+            alert("후기 내용을 입력해주세요!");
+            return;
+        }
+
+        // rating 필드를 제거하고 content만 전송
+        fetch("/review/add", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                product_id: productId, // key 이름을 백엔드에 맞게 product_id로 변경
+                content: content
+            })
+        })
+        .then((res) => {
+            if (res.status === 401) throw new Error("로그인 필요");
+            if (res.status === 400) throw new Error("필수 값 누락 또는 잘못된 요청");
+            if (!res.ok) throw new Error("서버 오류");
+            return res.json();
+        })
+        .then((data) => {
+            alert("후기 등록 완료!");
+            // 등록 완료 후 내 후기 목록 페이지로 이동하도록 변경 (rating.html)
+            window.opener.location.href = "rating.html"; 
+            window.close(); // 팝업창 닫기
+        })
+        .catch((err) => {
+            console.error(err);
+            alert(`후기 등록 중 오류 발생: ${err.message}`);
+        });
+    }
+</script>
+
+</body>
+</html>

@@ -29,7 +29,7 @@
         <ul class="submenu" style="left: -30px;">
           <li><a href="my_info.html">내 정보</a></li>
           <li><a href="goods_reg.html">등록한 상품 목록</a></li>
-          <li><a href="rating.html">후기 / 평점</a></li>
+          <li><a href="rating.html">후기</a></li>
           <li><a href="javascript:void(0);" onclick="openWithdrawPopup()">탈퇴하기</a></li>
         </ul>
       </li>
@@ -114,98 +114,25 @@
     </section>
   </main>
 
-  <script src="login_out.js"></script>
-  <script>
-    // 기존 UI 및 유저 정보 로직 유지
-    function openWithdrawPopup() {
-      const popupWidth = 500;
-      const popupHeight = 650;
-      const left = (window.screen.width / 2) - (popupWidth / 2);
-      const top = (window.screen.height / 2) - (popupHeight / 2);
-      window.open("withdraw.html", "withdrawPopup", `width=${popupWidth},height=${popupHeight},left=${left},top=${top},status=no,menubar=no,toolbar=no,resizable=no`);
-    }
+  <script src="login_out.js">
+    document.addEventListener('DOMContentLoaded', () => {
+    // 1. 사용자 정보 로드 및 표시
+    loadUserInfo();
 
-    function clearSearchInput() {
-      const searchInput = document.getElementById('searchInput');
-      searchInput.value = '';
-      showHideClearButton();
-      searchInput.focus();
-    }
+    // 2. 찜 목록 가져오기
+    loadDataAndRender('/wishlist/list', 'wishlist-display', 'wishlist');
 
-    function showHideClearButton() {
-      const searchInput = document.getElementById('searchInput');
-      const clearBtn = document.getElementById('clearBtn');
-      clearBtn.style.display = searchInput.value.length > 0 ? 'block' : 'none';
-    }
+    // 3. 판매중 목록 가져오기
+    loadDataAndRender('/product/selling/active', 'selling-list', 'selling');
 
-    // document.addEventListener("DOMContentLoaded", () => {
-    //   const userId = localStorage.getItem("userId");
-    //   if (!userId) {
-    //     alert("로그인이 필요합니다.");
-    //     window.location.href = "login.html";
-    //     return;
-    //   }
-    //   fetch(`http://localhost:3000/user/info?userId=${userId}`)
-    //     .then(res => res.json())
-    //     .then(data => {
-    //       document.querySelector(".info-value.id").textContent = data.username;
-    //       document.querySelector(".info-value.nickname").textContent = data.name;
-    //     })
-    //     .catch(err => console.error("내 정보 불러오기 실패:", err));
-    // });
-    document.addEventListener("DOMContentLoaded", () => {
-      // 로그인 상태 체크
-      fetch("/user/current")
-        .then(res => {
-          if (res.status === 401) {
-            throw new Error("로그인이 필요합니다.");
-          }
-          return fetch("/user/info");
-        })
-        .then(res => res.json())
-        .then(data => {
-          // 기본 정보 표시
-          document.querySelector(".info-value.id").textContent = data.username;
-          document.querySelector(".info-value.nickname").textContent = data.name;
+    // 4. 판매 완료 목록 가져오기 (라우터 구현 완료)
+    loadDataAndRender('/product/sold', 'sales-list', 'sold');
 
-          // 이메일
-          document.querySelector(".info-value.email").textContent =
-            data.email || "정보 없음";
-
-          // 전화번호 포맷팅
-          const formattedPhone = data.phone
-            ? data.phone.replace(/(\d{3})(\d{4})(\d{4})/, "$1-$2-$3")
-            : "정보 없음";
-          document.querySelector(".info-value.phone").textContent = formattedPhone;
-
-          // 생년월일 포맷팅
-          const formattedBirth = data.birth
-            ? data.birth
-              .replace(/(\d{4})-(\d{2})-(\d{2})/, "$1.$2.$3")
-              .replace(/(\d{4})(\d{2})(\d{2})/, "$1.$2.$3")
-            : "정보 없음";
-          document.querySelector(".info-value.birth").textContent = formattedBirth;
-
-          // 성별 변환
-          let genderDisplay = "정보 없음";
-          if (data.gender) {
-            const gender = data.gender.toUpperCase();
-            if (gender === "M") genderDisplay = "남성";
-            else if (gender === "F") genderDisplay = "여성";
-            else genderDisplay = data.gender;
-          }
-          document.querySelector(".info-value.gender").textContent = genderDisplay;
-        })
-        .catch(error => {
-          console.error("내 정보 불러오기 실패:", error);
-          alert("로그인이 필요합니다.");
-          window.location.href = "login.html";
-        });
-    });
-
+    // 5. 구매 목록 가져오기 (라우터 구현 완료)
+    loadDataAndRender('/product/bought', 'purchase-list', 'bought');
+});
   </script>
-
-
+  
 
 </body>
 

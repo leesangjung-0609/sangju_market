@@ -319,4 +319,64 @@ router.get("/seller/:sellerId", (req, res) => {
   });
 });
 
+router.delete("/withdraw", async (req, res) => {
+    // 1. 로그인 상태 확인
+    if (!req.session.user) {
+        return res.status(401).send("로그인이 필요합니다.");
+    }
+
+    const userId = req.session.user.user_id;
+    const { password } = req.body;
+
+    if (!password) {
+        return res.status(400).send("비밀번호를 입력해야 합니다.");
+    }
+
+    try {
+        // 2. DB에서 현재 비밀번호 해시값 조회
+        const pwCheckSql = `SELECT password FROM user WHERE user_id = ? AND status = 'active'`;
+        const results = await new Promise((resolve, reject) => {
+            db.query(pwCheckSql, [userId], (err, results) => {
+                if (err) return reject(err);
+                resolve(results);
+            });
+        });
+
+        if (results.length === 0) {
+            return res.status(404).send("회원 정보를 찾을 수 없습니다.");
+        }
+
+        const hashedPassword = results[0].password;
+
+        // 3. 비밀번호 비교
+        const passwordMatches = await bcrypt.compare(password, hashedPassword);
+
+        if (!passwordMatches) {
+            return res.status(401).send("비밀번호가 일치하지 않아 탈퇴할 수 없습니다.");
+        }
+
+        // 4. 회원 정보 삭제
+        const deleteSql = `DELETE FROM user WHERE user_id = ?`;
+
+        await new Promise((resolve, reject) => {
+            db.query(deleteSql, [userId], err => {
+                if (err) return reject(err);
+                resolve();
+            });
+        });
+
+        // 5. 세션 제거
+        req.session.destroy(err => {
+            if (err) {
+                console.error("세션 삭제 오류:", err);
+                return res.status(500).send("회원 탈퇴 완료, 세션 제거 실패");
+            }
+            res.send("회원 탈퇴가 완료되었습니다. 이용해 주셔서 감사합니다.");
+        });
+
+    } catch (error) {
+        console.error("회원 탈퇴 중 오류 발생:", error);
+        res.status(500).send("서버 오류로 인해 탈퇴에 실패했습니다.");
+    }
+});
 module.exports = router;

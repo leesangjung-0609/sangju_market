@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>회원 탈퇴 - 중고마켓</title>
   <link rel="stylesheet" href="style.css" />
   <style>
-    
+
   </style>
 </head>
+
 <body>
 
   <main class="container">
@@ -18,13 +20,13 @@
         <h4>정말 탈퇴하시겠습니까?</h4>
         <p>탈퇴 시 모든 계정 정보, 판매 내역, 후기, 찜 목록이 영구적으로 삭제되며 복구할 수 없습니다. 신중하게 결정해주세요.</p>
       </div>
-      
+
       <form onsubmit="return false;">
         <div class="form-group">
           <label for="pw-confirm">비밀번호 확인</label>
           <input type="password" id="pw-confirm" placeholder="본인 확인을 위해 비밀번호를 입력하세요." />
         </div>
-        
+
         <button type="button" class="btn btn-danger" onclick="confirmWithdrawal()">
           회원 탈퇴
         </button>
@@ -33,34 +35,55 @@
   </main>
 
   <script>
-    function confirmWithdrawal() {
-    // 1. 페이지의 비밀번호 입력창에서 값을 가져옵니다.
-    const passwordOnPage = document.getElementById('pw-confirm').value;
+    async function confirmWithdrawal() {
+      // 1. 페이지의 비밀번호 입력창에서 값을 가져옵니다.
+      const passwordOnPage = document.getElementById('pw-confirm').value;
 
-    // 2. 입력값이 비어있는지 확인합니다.
-    if (passwordOnPage === '') {
-      alert('비밀번호를 먼저 입력해주세요.');
-      document.getElementById('pw-confirm').focus(); // 입력창에 포커스
-      return; // 함수 종료
+      // 2. 입력값이 비어있는지 확인합니다.
+      if (passwordOnPage === '') {
+        alert('비밀번호를 먼저 입력해주세요.');
+        document.getElementById('pw-confirm').focus();
+        return;
+      }
+
+      // 3. 사용자에게 최종 확인을 받습니다.
+      if (confirm("정말 탈퇴하시겠습니까? (이 작업은 되돌릴 수 없습니다.)")) {
+        try {
+          // 4. 서버에 DELETE 요청 전송
+          const response = await fetch('/user/withdraw', {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ password: passwordOnPage })
+          });
+
+          const message = await response.text();
+
+          if (response.ok) {
+            // 성공적으로 탈퇴 처리
+            alert(message);
+            if (window.opener && !window.opener.closed) {
+              // 부모 창(main.html)에 있는 로그아웃 처리 함수 호출
+              window.opener.handleLogoutAfterWithdrawal();
+            }
+
+            window.close(); // 또는 location.href = '/'
+          } else {
+            // 탈퇴 실패
+            alert('탈퇴 실패: ' + message);
+          }
+        } catch (error) {
+          console.error('네트워크 또는 서버 오류:', error);
+          alert('오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
+        }
+      } else {
+        // '취소'를 누른 경우
+        alert('탈퇴가 취소되었습니다.');
+      }
     }
 
-    // 3. (비밀번호가 입력되었다고 가정하고) 바로 'confirm' 팝업을 띄웁니다.
-    // 🔽 요청하신 대로 이 부분만 남깁니다. 🔽
-    if (confirm("정말 탈퇴하시겠습니까? (이 작업은 되돌릴 수 없습니다.)")) {
-      
-      // '확인'을 누른 경우
-      // (실제 DB 연동 시) 여기서 passwordOnPage가 DB와 일치하는지 최종 확인합니다.
-      // 지금은 사용자의 요청대로 '정확하다고 가정'합니다.
-      
-      alert('탈퇴 처리되었습니다.');
-      window.close(); // 팝업창 닫기
-      
-    } else {
-      // '취소'를 누른 경우
-      alert('탈퇴가 취소되었습니다.');
-    }
-  }
-  function clearSearchInput() {
+    function clearSearchInput() {
       const searchInput = document.getElementById('searchInput');
       searchInput.value = '';
       showHideClearButton();
@@ -80,4 +103,5 @@
   </script>
 
 </body>
+
 </html>

@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="style.css" />
 
   <style>
+    /* 사용자 요청에 따라 이 스타일 블록은 수정하지 않았습니다. */
     body {
       margin-top: 80px;
     }
@@ -75,7 +76,7 @@
         <ul class="submenu" style="left: -30px;">
           <li><a href="my_info.html">내 정보</a></li>
           <li><a href="goods_reg.html">등록한 상품 목록</a></li>
-          <li><a href="rating.html">후기 / 평점</a></li>
+          <li><a href="rating.html">후기</a></li>
           <li><a href="javascript:void(0);" onclick="openWithdrawPopup()">탈퇴하기</a></li>
         </ul>
       </li>
@@ -109,29 +110,19 @@
         판매자: <strong>db의신</strong>
       </div>
       <div style="margin-top: 20px; display: flex; gap: 12px;">
-        <!-- <button id="buyBtn"
-          style="padding:12px 25px; background:#2c7be5; color:white; border:none; border-radius:6px; font-size:16px; cursor:pointer;">
-          구매하기
-        </button> -->
         <button id="likeBtn"
           style="padding:12px 20px; background:#e74c3c; color:white; border:none; border-radius:6px; font-size:16px; cursor:pointer;">
           ♥ 좋아요
         </button>
-
-        <!-- 후기 작성 버튼 추가 ,이부분은 추가된거임-->
-        <button id="reviewWriteBtn"
-          style="padding:12px 20px; background:#27ae60; color:white; border:none; border-radius:6px; font-size:16px; cursor:pointer;">
-          후기 작성
-        </button>
-
-
         <button id="editBtn"
           style="padding:12px 25px; background:#2980b9; color:white; border:none; border-radius:6px; font-size:16px; cursor:pointer; display:none;">수정하기</button>
+        <button id="markSoldBtn"
+          style="padding:12px 25px; background:#27ae60; color:white; border:none; border-radius:6px; font-size:16px; cursor:pointer; display:none;">판매완료
+          처리</button>
       </div>
     </div>
   </div>
 
-  <!-- 1. 🔹 댓글 표시 영역,일단이거 방금 넣은부분 -->
   <section id="commentSection" style="width:80%; margin:40px auto;">
     <h3>💬 댓글</h3>
     <div id="commentList"></div>
@@ -139,6 +130,7 @@
     <textarea id="commentInput" placeholder="댓글을 입력하세요" style="width:100%; height:70px; margin-top:10px;"></textarea>
     <button id="commentSubmitBtn" style="margin-top:10px;">댓글 작성</button>
   </section>
+
 
 
   <script>
@@ -150,7 +142,8 @@
       const popupHeight = 650;
       const left = (window.screen.width / 2) - (popupWidth / 2);
       const top = (window.screen.height / 2) - (popupHeight / 2);
-      const options = `width=${popupWidth},height=${popupHeight},left=${left},top=${top},status=no,menubar=no,toolbar=no,resizable=no`;
+      const options =
+        `width=${popupWidth},height=${popupHeight},left=${left},top=${top},status=no,menubar=no,toolbar=no,resizable=no`;
       window.open("withdraw.html", "withdrawPopup", options);
     }
 
@@ -173,17 +166,21 @@
     const commentList = document.getElementById("commentList");
     const commentInput = document.getElementById("commentInput");
     const commentSubmitBtn = document.getElementById("commentSubmitBtn");
+    const likeBtn = document.getElementById("likeBtn");
     const editBtn = document.getElementById("editBtn");
+    const markSoldBtn = document.getElementById("markSoldBtn");
     let currentUser = null; // 로그인한 사용자 정보 저장
 
     // =========================================
-    // 3. 사용자 및 상품 정보 로드
+    // 3. 사용자 및 상품 정보 로드/처리
     // =========================================
 
     // 현재 로그인한 사용자 정보 가져오기 (댓글 수정/삭제 권한 확인용)
     async function loadCurrentUser() {
       try {
-        const res = await fetch("/user/current", { credentials: "include" });
+        const res = await fetch("/user/current", {
+          credentials: "include"
+        });
         if (res.ok) {
           const data = await res.json();
           currentUser = data.username;
@@ -195,29 +192,202 @@
         console.error("사용자 정보 로드 실패", err);
       }
     }
+
     function openEditPopup(productId) {
       const popupWidth = 600;
       const popupHeight = 700;
-      const left = (window.screen.width / 2) - (popupWidth / 2);
-      const top = (window.screen.height / 2) - (popupHeight / 2);
-      const options = `width=${popupWidth},height=${popupHeight},left=${left},top=${top},status=no,menubar=no,toolbar=no,resizable=no`;
-      window.open(`goods_reg_form.html?id=${productId}`, "editProductPopup", options);
+      const left = window.screen.width / 2 - popupWidth / 2;
+      const top = window.screen.height / 2 - popupHeight / 2;
+
+      const options =
+        `width=${popupWidth},height=${popupHeight},left=${left},top=${top},` +
+        `status=no,menubar=no,toolbar=no,resizable=no`;
+
+      // 팝업 창 객체를 변수에 저장
+      const editWindow = window.open(
+        `goods_reg_form.html?id=${productId}`,
+        "editProductPopup",
+        options
+      );
+
+      // ⭐⭐⭐ 팝업 닫힘 감지 로직 ⭐⭐⭐
+      if (editWindow) {
+        const checkClosed = setInterval(() => {
+          // 팝업이 닫혔을 때
+          if (editWindow.closed) {
+            clearInterval(checkClosed);
+            console.log("상품 수정 팝업이 닫혔습니다. 페이지 새로고침.");
+            window.location.reload();
+          }
+        }, 100);
+      }
+    }
+
+
+    // ⭐⭐⭐ [수정] 판매완료 처리 및 구매자 닉네임 입력 로직 ⭐⭐⭐
+    async function markProductAsSold(productId) {
+      if (!confirm("상품을 '판매완료' 처리하고 구매자를 지정하시겠습니까? (되돌릴 수 없습니다.)")) return;
+
+      // 구매자 닉네임 입력 받기 (prompt)
+      const buyerNickname = prompt("거래를 완료한 구매자의 닉네임(이름)을 정확히 입력해주세요.");
+
+      if (buyerNickname === null || buyerNickname.trim() === "") {
+        alert("구매자 닉네임을 입력해야 판매완료 처리가 가능합니다.");
+        return;
+      }
+
+      try {
+        const res = await fetch(`/product/mark_sold/${productId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            buyer_nickname: buyerNickname.trim()
+          }),
+          credentials: "include"
+        });
+
+        const result = await res.json();
+
+        if (res.ok && result.success) {
+          alert(`판매완료 처리되었습니다. [${buyerNickname}]님의 구매 내역에 추가됩니다.`);
+          // 상태 변경 후 페이지 새로고침
+          window.location.reload();
+        } else {
+          alert(result.message || "판매완료 처리 실패: 구매자 닉네임 확인 필요 또는 서버 오류");
+        }
+
+      } catch (err) {
+        console.error("판매완료 처리 오류:", err);
+        alert("서버 통신 오류로 판매완료 처리에 실패했습니다.");
+      }
+    }
+    // 찜 상태 확인 및 버튼 초기화
+    async function checkAndSetupLikeButton(productId) {
+      if (!currentUser) {
+        likeBtn.onclick = () => alert("로그인이 필요합니다.");
+        return;
+      }
+
+      try {
+        // 백엔드: GET /wishlist/check/:productId
+        const res = await fetch(`/wishlist/check/${productId}`, {
+          credentials: "include"
+        });
+        const {
+          isWished
+        } = await res.json();
+
+        // 초기 버튼 UI 설정
+        updateLikeButtonUI(isWished);
+
+        // 버튼 클릭 이벤트 설정 (찜 토글)
+        likeBtn.onclick = () => toggleWishlist(productId, isWished);
+
+      } catch (err) {
+        console.error("찜 상태 확인 실패:", err);
+        likeBtn.onclick = () => alert("찜 상태 로드 실패");
+      }
+    }
+
+    // 찜 버튼 UI 업데이트 (색상/텍스트 변경)
+    function updateLikeButtonUI(isWished) {
+      if (isWished) {
+        likeBtn.textContent = "♥ 찜 해제";
+        likeBtn.style.backgroundColor = "#95a5a6"; // 회색 등으로 변경
+      } else {
+        likeBtn.textContent = "♥ 좋아요";
+        likeBtn.style.backgroundColor = "#e74c3c"; // 빨간색 유지
+      }
+    }
+
+    // 찜 추가/삭제 토글 로직
+    async function toggleWishlist(productId, currentStatus) {
+      likeBtn.disabled = true; // 중복 클릭 방지
+
+      try {
+        const method = currentStatus ? "DELETE" : "POST";
+        const url = currentStatus ? "/wishlist/remove" : "/wishlist/add";
+
+        const res = await fetch(url, {
+          method: method,
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            productId: productId
+          }),
+          credentials: "include"
+        });
+
+        const result = await res.json();
+        alert(result.message);
+
+        // UI를 갱신하여 최신 상태를 반영합니다.
+        await checkAndSetupLikeButton(productId);
+
+      } catch (err) {
+        console.error("찜 토글 오류:", err);
+        alert("찜 기능 처리 중 오류가 발생했습니다.");
+      } finally {
+        likeBtn.disabled = false;
+      }
     }
 
     // 상품 상세 정보 불러오기
-    // 상품 상세 정보 불러오기
-async function loadProduct() {
+    async function loadProduct() {
       const params = new URLSearchParams(window.location.search);
       const productId = params.get("id");
-      if (!productId) { alert("상품 ID 없음"); return; }
+      if (!productId) {
+        alert("상품 ID 없음");
+        return;
+      }
 
       try {
-        const res = await fetch(`/product/${productId}`, { credentials: "include" });
+        const res = await fetch(`/product/${productId}`, {
+          credentials: "include"
+        });
         if (!res.ok) throw new Error("상품 불러오기 실패");
 
         const product = await res.json();
         const isSeller = currentUser === product.username;
-        
+
+        // ⭐⭐⭐ [수정] 판매자/구매자에 따른 버튼 표시 로직 ⭐⭐⭐
+        if (product.status === "판매완료") {
+          likeBtn.style.display = "none";
+          editBtn.style.display = "none";
+          markSoldBtn.style.display = "none";
+        }
+        else if (isSeller) {
+          // 1. 판매자인 경우: 좋아요 숨김, 수정/판매완료 표시
+          likeBtn.style.display = "none";
+          editBtn.style.display = "block";
+          editBtn.onclick = function () {
+            openEditPopup(productId);
+          };
+
+          // 판매중일 때만 '판매완료 처리' 버튼 표시
+          if (product.status === "판매중" || product.status === "예약중") {
+            markSoldBtn.style.display = "block";
+            markSoldBtn.onclick = function () {
+              markProductAsSold(productId); // 구매자 ID 입력 로직 포함
+            };
+          } else {
+            markSoldBtn.style.display = "none";
+          }
+        } else {
+          // 2. 구매자인 경우: 좋아요 표시, 수정/판매완료 숨김
+          likeBtn.style.display = "block";
+          editBtn.style.display = "none";
+          markSoldBtn.style.display = "none";
+
+          // 좋아요 버튼 기능 초기화
+          await checkAndSetupLikeButton(productId);
+        }
+        // ⭐⭐⭐ 수정 끝 ⭐⭐⭐
+
+
         const statusBadge = document.getElementById("statusBadge");
         if (statusBadge) {
           statusBadge.textContent = product.status; // '판매중', '예약중' 등 텍스트 넣기
@@ -245,18 +415,6 @@ async function loadProduct() {
         document.getElementById("productDesc").textContent = product.description || "";
         document.getElementById("sellerName").innerHTML = `판매자: <strong>${product.username}</strong>`;
 
-        if (isSeller) {
-          editBtn.style.display = "block";
-          editBtn.onclick = function () {
-            openEditPopup(productId);
-          };
-        } else {
-          editBtn.style.display = "none";
-        }
-
-        document.getElementById("likeBtn").onclick = async function () {
-          // ... (좋아요 기능 중략)
-        };
       } catch (err) {
         console.error(err);
         alert("상품 정보를 불러오지 못했습니다.");
@@ -264,16 +422,15 @@ async function loadProduct() {
     }
 
 
-    // 구매 버튼 이벤트
-
 
     // 판매자 클릭 이벤트
     document.getElementById("sellerName").addEventListener("click", () => {
+      // 실제 seller.html로 이동할 때 쿼리 파라미터로 판매자 ID를 넘겨야 할 수 있습니다.
       window.location.href = 'seller.html';
     });
 
     // =========================================
-    // 4. 댓글 관련 로직 (수정된 부분)
+    // 4. 댓글 관련 로직
     // =========================================
 
     // 댓글 목록 불러오기
@@ -434,22 +591,9 @@ async function loadProduct() {
     // =========================================
     (async function init() {
       await loadCurrentUser(); // 사용자 정보 먼저 로드 (버튼 표시 로직 위해)
-      loadProduct();           // 상품 정보 로드
-      loadComments();          // 댓글 로드
+      loadProduct(); // 상품 정보 로드
+      loadComments(); // 댓글 로드
     })();
-
-
-   // 6. 후기작성으로 옮겨가는페이지 관련 자바스크립트 함수작성  
-      document.getElementById("reviewWriteBtn").addEventListener("click", () => {
-    const params = new URLSearchParams(window.location.search);
-    const productId = params.get("id");
-
-    if (!productId) return alert("상품 정보를 불러올 수 없습니다.");
-
-    window.location.href = `review_write.html?id=${productId}`;
-  });
-
-
   </script>
 
 </body>
