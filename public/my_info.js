@@ -8,17 +8,23 @@
  */
 function openEditPopup() {
     const popupWidth = 500;
-    const popupHeight = 850; // 입력 필드가 많으므로 높이를 넉넉하게 잡음
-    
+    const popupHeight = 930; // 입력 필드가 많으므로 높이를 넉넉하게 잡음
+
     // 화면 중앙에 위치 계산
-    const left = (window.screen.width / 2) - (popupWidth / 2);
+    const leftPosition = (window.screen.width / 3) * 2;
+    const maxLeft = window.screen.width - popupWidth; // 화면 오른쪽 끝에 딱 붙는 위치
+
+    // 오른쪽 1/3 지점과 화면 끝 중 더 안전한 위치 선택
+    const left = Math.min(leftPosition, maxLeft);
+
+    // 세로 위치는 화면 중앙 유지
     const top = (window.screen.height / 2) - (popupHeight / 2);
-    
+
     // 팝업 옵션: 크기 고정(resizable=no), 스크롤 가능(scrollbars=yes)
     const options = `width=${popupWidth},height=${popupHeight},left=${left},top=${top},status=no,menubar=no,toolbar=no,resizable=no,scrollbars=yes`;
-    
+
     window.open("my_info_edit.html", "editPopup", options);
-  }
+}
 function createCardHTML(item, type) {
     let dateLabel = "등록일";
     let linkId = item.product_id || item.id;
@@ -58,7 +64,7 @@ function createCardHTML(item, type) {
     } else if (type === 'wishlist' && item.seller_name) {
         partnerInfo = `<p class="seller">판매자: ${item.seller_name}</p>`;
     }
-    
+
     // ⭐⭐ [수정된 부분] 상태 뱃지 추가 로직 ⭐⭐
     let statusBadge = '';
     if (item.status) {
@@ -261,10 +267,10 @@ async function loadUserInfo() {
         // 성별 표시
         let genderDisplay = "정보 없음";
         if (data.gender) {
-            const gender = data.gender.toUpperCase();
+            const gender = data.gender;
             if (gender === "male") genderDisplay = "남성";
             else if (gender === "female") genderDisplay = "여성";
-            else genderDisplay = data.gender;
+            else genderDisplay = "기타";
         }
         document.querySelector(".info-value.gender").textContent = genderDisplay;
 
